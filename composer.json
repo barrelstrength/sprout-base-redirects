@@ -1,0 +1,29 @@
+{
+  "name": "barrelstrength/sprout-base-redirects",
+  "description": "Common Redirects libraries for Sprout Plugins for Craft CMS",
+  "version": "1.0.1",
+  "type": "yii-module",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Barrel Strength",
+      "homepage": "https://www.barrelstrengthdesign.com/"
+    }
+  ],
+  "support": {
+    "email": "sprout@barrelstrengthdesign.com",
+    "issues": "https://github.com/barrelstrength/sprout-base-redirects/issues?state=open",
+    "source": "https://github.com/barrelstrength/sprout-base-redirects",
+    "docs": "https://sprout.barrelstrengthdesign.com/craft-plugins/seo/docs",
+    "rss": "https://github.com/barrelstrength/sprout-base-redirects/commits/v2.atom"
+  },
+  "require": {
+    "craftcms/cms": "^3.1.0",
+    "barrelstrength/sprout-base": "^4.0.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "barrelstrength\\sproutbaseredirects\\": "src/"
+    }
+  }
+}
