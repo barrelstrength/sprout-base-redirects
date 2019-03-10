@@ -19,11 +19,6 @@ use craft\helpers\ArrayHelper;
 use craft\i18n\PhpMessageSource;
 use yii\base\Event;
 
-use yii\web\HttpException;
-use craft\web\ErrorHandler;
-use craft\events\ExceptionEvent;
-use craft\helpers\UrlHelper;
-
 /**
  *
  * @property mixed $cpNavItem
@@ -118,58 +113,6 @@ class SproutBaseRedirects extends Module
         // Setup Template Roots
         Event::on(View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS, function(RegisterTemplateRootsEvent $e) {
             $e->roots['sprout-base-redirects'] = $this->getBasePath().DIRECTORY_SEPARATOR.'templates';
-        });
-
-        Event::on(ErrorHandler::class, ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION, function(ExceptionEvent $event) {
-
-            $request = Craft::$app->getRequest();
-
-            // Only handle front-end site requests that are not live preview
-            if (!$request->getIsSiteRequest() OR $request->getIsLivePreview()) {
-                return;
-            }
-
-            $exception = $event->exception;
-
-            // Rendering Twig can generate a 404 also: i.e. {% exit 404 %}
-            if ($event->exception instanceof \Twig_Error_Runtime) {
-                // If this is a Twig Runtime error, use the previous exception
-                $exception = $exception->getPrevious();
-            }
-
-            /**
-             * @var HttpException $exception
-             */
-            if ($exception instanceof HttpException && $exception->statusCode === 404) {
-
-                $currentSite = Craft::$app->getSites()->getCurrentSite();
-                $path = $request->getPathInfo();
-                $absoluteUrl = UrlHelper::url($path);
-
-                // Check if the requested URL needs to be redirected
-                $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
-
-                // @todo - how could we get the structureId setting?
-                $settings = self::$app->settings->getPluginSettings();
-
-                if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
-                    // Save new 404 Redirect
-                    $redirect = SproutBaseRedirects::$app->redirects->save404Redirect($absoluteUrl, $currentSite);
-                }
-
-                if ($redirect) {
-                    SproutBaseRedirects::$app->redirects->logRedirect($redirect->id, $currentSite);
-
-                    if ($redirect->enabled && (int)$redirect->method !== 404) {
-                        if (UrlHelper::isAbsoluteUrl($redirect->newUrl)){
-                            Craft::$app->getResponse()->redirect($redirect->newUrl, $redirect->method);
-                        }else{
-                            Craft::$app->getResponse()->redirect($redirect->getAbsoluteNewUrl(), $redirect->method);
-                        }
-                        Craft::$app->end();
-                    }
-                }
-            }
         });
 
         parent::init();
