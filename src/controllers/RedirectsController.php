@@ -23,6 +23,14 @@ use yii\web\ForbiddenHttpException;
  */
 class RedirectsController extends Controller
 {
+    private $currentPluginHandle;
+
+    public function init()
+    {
+        $this->currentPluginHandle = Craft::$app->request->getSegment(1);
+
+        parent::init();
+    }
     /**
      * @param string|null   $siteHandle
      *
@@ -100,10 +108,10 @@ class RedirectsController extends Controller
             }
         }
 
-        $redirect->newUrl = $redirect->newUrl === null ? '' : $redirect->newUrl;
+        $redirect->newUrl = $redirect->newUrl ?? '';
 
-        $continueEditingUrl = 'sprout-base-redirects/redirects/edit/{id}/'.$currentSite->handle;
-        $saveAsNewUrl = 'sprout-base-redirects/redirects/new/'.$currentSite->handle;
+        $continueEditingUrl = $this->currentPluginHandle.'/redirects/edit/{id}/'.$currentSite->handle;
+        $saveAsNewUrl = $this->currentPluginHandle.'/redirects/new/'.$currentSite->handle;
 
         $crumbs = [
             [

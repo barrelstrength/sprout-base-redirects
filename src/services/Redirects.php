@@ -298,7 +298,7 @@ class Redirects extends Component
 
         $baseUrl = Craft::getAlias($site->baseUrl);
 
-        $baseUrlMatch = mb_substr($absoluteUrl, 0, strlen($baseUrl)) === $baseUrl;
+        $baseUrlMatch = mb_strpos($absoluteUrl, $baseUrl) === 0;
 
         if (!$baseUrlMatch) {
             return null;

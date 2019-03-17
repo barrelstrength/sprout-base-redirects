@@ -17,7 +17,7 @@
                 var uri = '';
                 for (var i = 0; i < Craft.sites.length; i++) {
                     if (Craft.sites[i].id == Craft.elementIndex.siteId) {
-                        uri += 'sprout-base-redirects/redirects/new/'+Craft.sites[i].handle;
+                        uri += 'sprout-redirects/redirects/new/'+Craft.sites[i].handle;
                         uri = Craft.getUrl(uri);
                         $("#sprout-base-redirects-new-button").attr("href", uri);
                     }

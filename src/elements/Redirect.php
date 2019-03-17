@@ -131,7 +131,9 @@ class Redirect extends Element
      */
     public function getCpEditUrl()
     {
-        $url = UrlHelper::cpUrl('sprout-base-redirects/redirects/edit/'.$this->id);
+        $currentPluginHandle = Craft::$app->request->getBodyParam('criteria.base') ?? 'sprout-redirects';
+
+        $url = UrlHelper::cpUrl($currentPluginHandle.'/redirects/edit/'.$this->id);
 
         if (Craft::$app->getIsMultiSite() && $this->siteId != Craft::$app->getSites()->getCurrentSite()->id) {
             $url .= '/'.$this->getSite()->handle;

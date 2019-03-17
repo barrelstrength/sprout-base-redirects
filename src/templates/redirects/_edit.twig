@@ -2,9 +2,10 @@
 {% import "_includes/forms" as forms %}
 
 {% set title = (redirect.id != "" ? "Edit Redirect"|t('sprout-base-redirects') : "Create a new redirect"|t('sprout-base-redirects')) %}
+{% set currentPluginHandle = craft.app.request.getSegment(1) %}
 
 {% set crumbs = [
-    { label: "Redirects"|t('sprout-base-redirects'), url: url('sprout-base-redirects/redirects/' ~ currentSite.handle) }
+    { label: "Redirects"|t('sprout-base-redirects'), url: url(currentPluginHandle ~ '/redirects/' ~ currentSite.handle) }
 ] %}
 
 {% set fullPageForm = true %}
@@ -27,7 +28,9 @@
                 {% if redirect.id is not null %}
                     <hr>
                     <ul>
-                        <li><a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ cpUrl('sprout-base-redirects/redirects/' ~ currentSite.handle)|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a></li>
+                        <li>
+                            <a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ cpUrl(currentPluginHandle ~ '/redirects/' ~ currentSite.handle)|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a>
+                        </li>
                     </ul>
                 {% endif %}
             </ul>
@@ -41,7 +44,7 @@
            value="sprout-base-redirects/redirects/save-redirect">
     <input type="hidden" name="redirectId" value="{{ redirect.id }}">
     <input type="hidden" name="redirect"
-           value="{{ 'sprout-base-redirects/redirects'|hash }}">
+           value="{{ currentPluginHandle ~ '/redirects'|hash }}">
 
     {% if redirect.id %}
         <input type="hidden" name="redirectId"
@@ -94,16 +97,21 @@
 
         <p>{{ "Redirect multiple URLs with a similar pattern by selecting the 'Evaluate regular expressions' option."|t('sprout-base-redirects') }}</p>
 
-        <p><strong>{{ "Old URL - Regular Expressions"|t('sprout-base-redirects') }}</strong></p>
+        <p>
+            <strong>{{ "Old URL - Regular Expressions"|t('sprout-base-redirects') }}</strong>
+        </p>
         <ul>
             <li>{{ "old-location/(.*)"|t('sprout-base-redirects') }}</li>
             <li>{{ "old-location/(\\d{4})/(\\d{2})"|t('sprout-base-redirects') }}</li>
         </ul>
 
-        <p><strong>{{ "New URL - Capture Groups"|t('sprout-base-redirects') }}</strong></p>
+        <p>
+            <strong>{{ "New URL - Capture Groups"|t('sprout-base-redirects') }}</strong>
+        </p>
         <ul>
             <li><em>{{ "new-location/$1"|t('sprout-base-redirects') }}</em></li>
-            <li><em>{{ "new-location/$1/$2"|t('sprout-base-redirects') }}</em></li>
+            <li><em>{{ "new-location/$1/$2"|t('sprout-base-redirects') }}</em>
+            </li>
         </ul>
 
     </div>

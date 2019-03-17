@@ -36,7 +36,7 @@ class SproutBaseRedirectsVariable
      */
     public function __construct()
     {
-        $this->plugin = Craft::$app->plugins->getPlugin('sprout-base-redirects');
+        $this->plugin = Craft::$app->plugins->getPlugin('sprout-redirects');
     }
 
     /**
@@ -44,7 +44,7 @@ class SproutBaseRedirectsVariable
      */
     public function getSettings()
     {
-        return Craft::$app->plugins->getPlugin('sprout-base-redirects')->getSettings();
+        return Craft::$app->plugins->getPlugin('sprout-redirects')->getSettings();
     }
 
     /**

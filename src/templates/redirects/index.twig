@@ -4,10 +4,12 @@
 
 {% do view.registerAssetBundle("barrelstrength\\sproutbaseredirects\\web\\assets\\redirects\\RedirectsAsset") %}
 
+{% set currentPluginHandle = craft.app.request.getSegment(1) %}
+
 {% block actionButton %}
     <div class="buttons">
         <a class="btn submit add icon" id="sprout-base-redirects-new-button"
-           href="{{ url('sprout-base-redirects/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
+           href="{{ url(currentPluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
     </div>
 {% endblock %}
 
