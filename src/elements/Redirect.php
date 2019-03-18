@@ -253,12 +253,12 @@ class Redirect extends Element
 
             foreach ($methods as $code => $method) {
                 
-                $key = 'method:'.$method;
+                $key = 'method:'.$code;
 
                 $sources[] = [
                     'key' => $key,
                     'label' => $method,
-                    'criteria' => ['method' => $method],
+                    'criteria' => ['method' => $code],
                     'structureId' => SproutBaseRedirects::$app->redirects->getStructureId(),
                     'structureEditable' => true
                 ];
