@@ -142,7 +142,7 @@ class Redirect extends Element
     {
         /** @var SproutRedirects $plugin */
         $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsLite = $plugin->is(SproutRedirects::EDITION_LITE) ?? false;
+        $sproutRedirectsIsLite = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_LITE) : false;
 
         /** @var Plugin $sproutSeoPlugin */
         $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
