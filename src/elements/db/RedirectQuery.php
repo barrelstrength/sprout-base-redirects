@@ -12,7 +12,6 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutredirects\SproutRedirects;
 use craft\db\Connection;
 use craft\elements\db\ElementQuery;
-use craft\events\DefineUserContentSummaryEvent;
 use craft\helpers\Db;
 
 
@@ -120,8 +119,11 @@ class RedirectQuery extends ElementQuery
             );
         }
 
+        /** @var SproutRedirects $plugin */
+        $plugin  = SproutRedirects::getInstance();
+
         // Only display 404s for LITE
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_LITE)) {
+        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
             if ($this->method === null OR strpos($this->method, '404') === 0) {
                 // Only display 404s for All Redirects and 404 filters
                 $this->subQuery->andWhere(Db::parseParam(
@@ -134,7 +136,7 @@ class RedirectQuery extends ElementQuery
         }
 
         // Filter all methods for PRO
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_PRO) && $this->method) {
+        if ($plugin->is(SproutRedirects::EDITION_PRO) && $this->method) {
             $this->subQuery->andWhere(Db::parseParam(
                 'sproutseo_redirects.method', $this->method)
             );

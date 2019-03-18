@@ -7,11 +7,15 @@
 
 namespace barrelstrength\sproutbaseredirects\services;
 
+use barrelstrength\sproutredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
+use barrelstrength\sproutseo\SproutSeo;
 use Craft;
+use craft\base\Plugin;
+use craft\helpers\Json;
 use craft\models\Site;
 use yii\base\Component;
 use craft\helpers\UrlHelper;
@@ -50,6 +54,7 @@ class Redirects extends Component
         // Rendering Twig can generate a 404 also: i.e. {% exit 404 %}
         if ($event->exception instanceof \Twig_Error_Runtime) {
             // If this is a Twig Runtime error, use the previous exception
+            /** @var \Twig_Error_Runtime $exception */
             $exception = $exception->getPrevious();
         }
 
@@ -65,6 +70,7 @@ class Redirects extends Component
             // Check if the requested URL needs to be redirected
             $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
 
+            /** @var SproutSeo $plugin */
             $plugin = Craft::$app->plugins->getPlugin($pluginHandle);
             $settings = $plugin->getSettings();
 
@@ -130,10 +136,8 @@ class Redirects extends Component
                     $redirect->newUrl = preg_replace($oldUrlPattern, $redirect->newUrl, $currentPath);
                     return $redirect;
                 }
-            } else {
-                if ($baseSiteUrl.$redirect->oldUrl === $absoluteUrl) {
-                    return $redirect;
-                }
+            } else if ($baseSiteUrl.$redirect->oldUrl === $absoluteUrl) {
+                return $redirect;
             }
         }
 
@@ -145,13 +149,14 @@ class Redirects extends Component
      *
      * @return array
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         $methods = [
             Craft::t('sprout-base-redirects', RedirectMethods::Permanent) => 'Permanent',
             Craft::t('sprout-base-redirects', RedirectMethods::Temporary) => 'Temporary',
             Craft::t('sprout-base-redirects', RedirectMethods::PageNotFound) => 'Page Not Found'
         ];
+
         $newMethods = [];
 
         foreach ($methods as $key => $value) {
@@ -171,7 +176,7 @@ class Redirects extends Component
      * @return int
      * @throws \yii\db\Exception
      */
-    public function updateRedirectMethod($ids, $newMethod)
+    public function updateRedirectMethod($ids, $newMethod): int
     {
         $response = Craft::$app->db->createCommand()->update(
             '{{%sproutseo_redirects}}',
@@ -189,7 +194,7 @@ class Redirects extends Component
      *
      * @return string
      */
-    public function getMethodUpdateResponse($status)
+    public function getMethodUpdateResponse($status): string
     {
         $response = null;
         if ($status) {
@@ -208,7 +213,7 @@ class Redirects extends Component
      *
      * @return array
      */
-    public function removeSlash($uri)
+    public function removeSlash($uri): array
     {
         $slash = '/';
 
@@ -222,7 +227,7 @@ class Redirects extends Component
     /**
      * This service allows find the structure id from the sprout seo settings
      *
-     * @return int
+     * @return mixed|null
      */
     public function getStructureId()
     {
@@ -236,8 +241,10 @@ class Redirects extends Component
         if ($sproutSeo) {
             $pluginSettings = $sproutSeo->getSettings();
         } else {
-            $sproutRedirects = Craft::$app->plugins->getPlugin('sprout-redirects');
-            $pluginSettings = $sproutRedirects->getSettings();
+            /** @var Plugin $plugin */
+            $plugin = Craft::$app->plugins->getPlugin('sprout-redirects');
+            /** @var Settings $pluginSettings */
+            $pluginSettings = $plugin->getSettings();
         }
 
         return $pluginSettings->structureId ?? null;
@@ -255,7 +262,7 @@ class Redirects extends Component
      * @return bool
      * @throws \Throwable
      */
-    public function logRedirect($redirectId, Site $currentSite)
+    public function logRedirect($redirectId, Site $currentSite): bool
     {
         $log = [];
 
@@ -265,7 +272,7 @@ class Redirects extends Component
             $log['ipAddress'] = $_SERVER['REMOTE_ADDR'];
             $log['dateCreated'] = date('Y-m-d h:m:s');
 
-            SproutBaseRedirects::warning('404 - Page Not Found: '.json_encode($log));
+            SproutBaseRedirects::warning('404 - Page Not Found: '. Json::encode($log));
 
             /**
              * @var Redirect $redirect
@@ -273,7 +280,7 @@ class Redirects extends Component
             $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $currentSite->id);
             ++$redirect->count;
 
-            Craft::$app->elements->saveElement($redirect, true);
+            Craft::$app->elements->saveElement($redirect);
         } catch (\Exception $e) {
             SproutBaseRedirects::error('Unable to log redirect: '.$e->getMessage());
         }
@@ -294,6 +301,8 @@ class Redirects extends Component
     public function save404Redirect($absoluteUrl, $site)
     {
         $redirect = new Redirect();
+
+        /** @var Settings $seoSettings */
         $seoSettings = SproutBaseRedirects::$app->settings->getPluginSettings();
 
         $baseUrl = Craft::getAlias($site->baseUrl);
@@ -319,7 +328,7 @@ class Redirects extends Component
         $redirect->count = 0;
         $redirect->siteId = $site->id;
 
-        if (!Craft::$app->elements->saveElement($redirect, true)) {
+        if (!Craft::$app->elements->saveElement($redirect)) {
             return null;
         }
 

@@ -19,7 +19,7 @@ class RedirectLog extends ActiveRecord
     /**
      * @return string
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%sproutseo_redirects_log}}';
     }

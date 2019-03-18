@@ -7,13 +7,17 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
+use barrelstrength\sproutredirects\models\Settings;
+use barrelstrength\sproutseo\SproutSeo;
 use Craft;
-
 use craft\db\Migration;
 use craft\models\Structure;
-use barrelstrength\sproutbaseredirects\models\Settings;
 use craft\services\Plugins;
 
+/**
+ *
+ * @property null|int $structureId
+ */
 class Install extends Migration
 {
     // Public Properties
@@ -31,7 +35,7 @@ class Install extends Migration
      * @return bool
      * @throws \Throwable
      */
-    public function safeUp()
+    public function safeUp(): bool
     {
         $this->createTables();
         return true;
@@ -49,6 +53,13 @@ class Install extends Migration
     // Protected Methods
     // =========================================================================
 
+    /**
+     * @throws \craft\errors\StructureNotFoundException
+     * @throws \yii\base\ErrorException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\NotSupportedException
+     * @throws \yii\web\ServerErrorHttpException
+     */
     protected function createTables()
     {
         $table = '{{%sproutseo_redirects}}';
@@ -83,7 +94,7 @@ class Install extends Migration
         $this->addForeignKey(
             null,
             '{{%sproutseo_redirects}}', 'id',
-            '{{%elements}}', 'id', 'CASCADE', null
+            '{{%elements}}', 'id', 'CASCADE'
         );
     }
 
@@ -99,10 +110,11 @@ class Install extends Migration
         $settings = new Settings();
         $projectConfig = Craft::$app->getProjectConfig();
 
-        $sproutSeo = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        /** @var SproutSeo $plugin */
+        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
 
-        if ($sproutSeo) {
-            $seoSettings = $sproutSeo->getSettings();
+        if ($plugin) {
+            $seoSettings = $plugin->getSettings();
             if ($seoSettings->structureId) {
                 $settings->structureId = $seoSettings->structureId;
                 //remove structure id from seo plugin

@@ -16,8 +16,6 @@ use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
 use barrelstrength\sproutredirects\SproutRedirects;
 use Craft;
-use craft\base\Plugin;
-use craft\helpers\Template;
 use craft\helpers\UrlHelper;
 use craft\elements\actions\Delete;
 use craft\elements\actions\Edit;
@@ -82,7 +80,10 @@ class Redirect extends Element
      */
     public static function hasStatuses(): bool
     {
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_LITE)) {
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+
+        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
             return false;
         }
 
@@ -138,7 +139,10 @@ class Redirect extends Element
      */
     public function getCpEditUrl()
     {
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_LITE)) {
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+
+        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
             return null;
         }
 
@@ -179,7 +183,10 @@ class Redirect extends Element
             'count' => Craft::t('sprout-base-redirects', 'Count')
         ];
 
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_PRO)) {
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+
+        if ($plugin->is(SproutRedirects::EDITION_PRO)) {
             $attributes['test'] = Craft::t('sprout-base-redirects', 'Test');
         }
 
@@ -211,7 +218,9 @@ class Redirect extends Element
      */
     protected static function defineSources(string $context = null): array
     {
-        $proEdition = SproutRedirects::getInstance()->is(SproutRedirects::EDITION_PRO);
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+        $proEdition = $plugin->is(SproutRedirects::EDITION_PRO);
 
         $sources = [
             [
@@ -252,7 +261,10 @@ class Redirect extends Element
     {
         $actions = [];
 
-        if (SproutRedirects::getInstance()->is(SproutRedirects::EDITION_PRO)) {
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+
+        if ($plugin->is(SproutRedirects::EDITION_PRO)) {
 
             // Set Status
             $actions[] = SetStatus::class;
@@ -301,7 +313,7 @@ class Redirect extends Element
         switch ($attribute) {
             case 'newUrl':
 
-                return $this->newUrl === null ? '/' : $this->newUrl;
+                return $this->newUrl ?? '/';
 
             case 'test':
                 // no link for regex
@@ -310,11 +322,15 @@ class Redirect extends Element
                 }
                 // Send link for testing
                 $site = Craft::$app->getSites()->getSiteById($this->siteId);
+
+                if ($site === null) {
+                    return ' - ';
+                }
+
                 $baseUrl = Craft::getAlias($site->baseUrl);
                 $oldUrl = $baseUrl.$this->oldUrl;
-                $link = "<a href='{$oldUrl}' target='_blank' class='go'>Test</a>";
 
-                return $link;
+                return "<a href='{$oldUrl}' target='_blank' class='go'>Test</a>";
         }
 
         return parent::tableAttributeHtml($attribute);
@@ -357,7 +373,7 @@ class Redirect extends Element
      * Update "oldUrl" and "newUrl" to starts with a "/"
      *
      */
-    public function beforeValidate()
+    public function beforeValidate(): bool
     {
         if ($this->oldUrl && !$this->regex) {
             $this->oldUrl = SproutBaseRedirects::$app->redirects->removeSlash($this->oldUrl);
@@ -414,7 +430,7 @@ class Redirect extends Element
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['oldUrl'], 'required'],
@@ -435,11 +451,15 @@ class Redirect extends Element
         }
     }
 
-    public function getAbsoluteNewUrl()
+    /**
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getAbsoluteNewUrl(): string
     {
         $baseUrl = Craft::getAlias($this->getSite()->baseUrl);
 
-        // @todo - remove ltrim after we updating saving to skip beginning slashes
+        // @todo - remove ltrim after we update to saving and skipping beginning slashes
         $path = ltrim($this->newUrl, '/');
 
         return $baseUrl.$path;
@@ -457,10 +477,8 @@ class Redirect extends Element
             ->where(['oldUrl' => $this->$attribute])
             ->one();
 
-        if ($redirect) {
-            if ($redirect->id != $this->id) {
-                $this->addError($attribute, 'This url already exists.');
-            }
+        if ($redirect && $redirect->id != $this->id) {
+            $this->addError($attribute, 'This url already exists.');
         }
     }
 }

@@ -39,7 +39,7 @@ class Delete404 extends BaseJob
      * @return bool
      * @throws \Throwable
      */
-    public function execute($queue)
+    public function execute($queue): bool
     {
         $query = (new Query())
             ->select(['redirects.id'])

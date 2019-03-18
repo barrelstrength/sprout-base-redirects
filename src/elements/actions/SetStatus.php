@@ -43,7 +43,7 @@ class SetStatus extends ElementAction
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         $rules = parent::rules();
         $rules[] = [['status'], 'required'];

@@ -13,7 +13,8 @@ use Craft;
 
 /**
  *
- * @property int $descriptionLength
+ * @property null|\craft\base\Model $pluginSettings
+ * @property int                    $descriptionLength
  */
 class Settings extends Component
 {
