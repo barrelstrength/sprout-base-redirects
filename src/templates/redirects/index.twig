@@ -1,16 +1,25 @@
 {% extends "sprout-base-redirects/_layouts/elementindex" %}
+{% import 'sprout-base/_includes/sproutcp' as sprout %}
+
 {% set elementType = 'barrelstrength\\sproutbaseredirects\\elements\\Redirect' %}
 {% set title = "Redirects" %}
 
 {% do view.registerAssetBundle("barrelstrength\\sproutbaseredirects\\web\\assets\\redirects\\RedirectsAsset") %}
+{% do view.registerAssetBundle("barrelstrength\\sproutbase\\web\\assets\\cp\\CpAsset") %}
 
 {% set currentPluginHandle = craft.app.request.getSegment(1) %}
 
 {% block actionButton %}
-    <div class="buttons">
-        <a class="btn submit add icon" id="sprout-base-redirects-new-button"
-           href="{{ url(currentPluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
-    </div>
+    {% if edition == 'pro' %}
+        <div class="buttons">
+            <a class="btn submit add icon" id="sprout-base-redirects-new-button"
+               href="{{ url(currentPluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
+        </div>
+    {% else %}
+        {{ sprout.upgradeToProButton({
+            url: "https://plugins.craftcms.com/sprout-redirects"
+        }) }}
+    {% endif %}
 {% endblock %}
 
 {% css %}

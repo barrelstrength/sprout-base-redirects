@@ -7,8 +7,11 @@
 
 namespace barrelstrength\sproutbaseredirects\controllers;
 
+use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
+use barrelstrength\sproutredirects\models\Settings;
+use barrelstrength\sproutredirects\SproutRedirects;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Craft;
@@ -25,9 +28,13 @@ class RedirectsController extends Controller
 {
     private $currentPluginHandle;
 
+    private $permissions = [];
+
     public function init()
     {
+        $permissionNames = Settings::getSharedPermissions();
         $this->currentPluginHandle = Craft::$app->request->getSegment(1);
+        $this->permissions = SproutBase::$app->settings->getSharedPermissions($permissionNames, 'sprout-redirects', $this->currentPluginHandle);
 
         parent::init();
     }
@@ -40,6 +47,8 @@ class RedirectsController extends Controller
      */
     public function actionRedirectsIndexTemplate($siteHandle = null): Response
     {
+        $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
+
         if ($siteHandle === null) {
             $primarySite = Craft::$app->getSites()->getPrimarySite();
             $siteHandle = $primarySite->handle;
@@ -51,8 +60,9 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
         }
 
-        return $this->renderTemplate('sprout-base-redirects/redirects', [
-            'currentSite' => $currentSite
+        return $this->renderTemplate('sprout-base-redirects/redirects/index', [
+            'currentSite' => $currentSite,
+            'edition' => SproutRedirects::getInstance()->edition
         ]);
     }
 
@@ -68,8 +78,10 @@ class RedirectsController extends Controller
      * @throws NotFoundHttpException
      * @throws \craft\errors\SiteNotFoundException
      */
-    public function actionEditRedirect($redirectId = null, $siteHandle = null, Redirect $redirect = null)
+    public function actionEditRedirect($redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
     {
+        $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
+
         if ($siteHandle === null)
         {
             $primarySite = Craft::$app->getSites()->getPrimarySite();
@@ -135,7 +147,8 @@ class RedirectsController extends Controller
             'crumbs' => $crumbs,
             'tabs' => $tabs,
             'continueEditingUrl' => $continueEditingUrl,
-            'saveAsNewUrl' => $saveAsNewUrl
+            'saveAsNewUrl' => $saveAsNewUrl,
+            'edition' => SproutRedirects::getInstance()->edition
         ]);
     }
 
@@ -149,9 +162,12 @@ class RedirectsController extends Controller
     public function actionSaveRedirect()
     {
         $this->requirePostRequest();
+        $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
         $redirectId = Craft::$app->getRequest()->getBodyParam('redirectId');
         $siteId = Craft::$app->getRequest()->getBodyParam('siteId');
+        $oldUrl = Craft::$app->getRequest()->getRequiredBodyParam('oldUrl');
+        $newUrl = Craft::$app->getRequest()->getBodyParam('newUrl');
 
         if ($redirectId) {
             $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $siteId);
@@ -172,9 +188,6 @@ class RedirectsController extends Controller
         }
 
         $defaultSiteId = Craft::$app->getSites()->getPrimarySite()->id;
-
-        $oldUrl = Craft::$app->getRequest()->getRequiredBodyParam('oldUrl', $redirect->oldUrl);
-        $newUrl = Craft::$app->getRequest()->getBodyParam('newUrl');
 
         // Set the event attributes, defaulting to the existing values for
         // whatever is missing from the post data
@@ -215,6 +228,7 @@ class RedirectsController extends Controller
     public function actionDeleteRedirect()
     {
         $this->requirePostRequest();
+        $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
         $redirectId = Craft::$app->getRequest()->getRequiredBodyParam('redirectId');
 
