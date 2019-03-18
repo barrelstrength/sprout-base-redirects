@@ -44,7 +44,7 @@ class Delete404 extends BaseJob
         $query = (new Query())
             ->select(['redirects.id'])
             ->from(['{{%sproutseo_redirects}} redirects'])
-            ->where(['method' =>  RedirectMethods::PageNotFound, 'elements_sites.siteId' => $this->siteId])
+            ->where(['method' => RedirectMethods::PageNotFound, 'elements_sites.siteId' => $this->siteId])
             ->innerJoin('{{%elements}} elements', '[[redirects.id]] = [[elements.id]]')
             ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]]');
 

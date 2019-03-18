@@ -53,7 +53,7 @@ class Install extends Migration
     {
         $table = '{{%sproutseo_redirects}}';
 
-        if (!$this->db->tableExists($table)){
+        if (!$this->db->tableExists($table)) {
             $this->createTable($table, [
                 'id' => $this->primaryKey(),
                 'oldUrl' => $this->string()->notNull(),
@@ -101,23 +101,23 @@ class Install extends Migration
 
         $sproutSeo = Craft::$app->getPlugins()->getPlugin('sprout-seo');
 
-        if ($sproutSeo){
+        if ($sproutSeo) {
             $seoSettings = $sproutSeo->getSettings();
-            if ($seoSettings->structureId){
+            if ($seoSettings->structureId) {
                 $settings->structureId = $seoSettings->structureId;
                 //remove structure id from seo plugin
                 // Add our default plugin settings
                 $pluginHandle = 'sprout-seo';
                 $seoSettings->structureId = null;
-                $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY . '.' . $pluginHandle . '.settings', $seoSettings->toArray());
-            }else{
+                $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $seoSettings->toArray());
+            } else {
                 $settings->structureId = $this->getStructureId();
             }
         }
 
         // Add our default plugin settings
         $pluginHandle = 'sprout-base-redirects';
-        $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY . '.' . $pluginHandle . '.settings', $settings->toArray());
+        $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $settings->toArray());
     }
 
     /**

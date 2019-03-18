@@ -1,6 +1,4 @@
-
-(function($)
-{
+(function($) {
     var RedirectIndex = Garnish.Base.extend({
         $menu: null,
         $form: null,
@@ -8,8 +6,7 @@
         /**
          * The constructor.
          */
-        init: function()
-        {
+        init: function() {
             var $siteMenu = $('.sitemenubtn:first').menubtn().data('menubtn').menu;
 
             // Change the siteId when on hidden values
@@ -17,7 +14,7 @@
                 var uri = '';
                 for (var i = 0; i < Craft.sites.length; i++) {
                     if (Craft.sites[i].id == Craft.elementIndex.siteId) {
-                        uri += 'sprout-redirects/redirects/new/'+Craft.sites[i].handle;
+                        uri += 'sprout-redirects/redirects/new/' + Craft.sites[i].handle;
                         uri = Craft.getUrl(uri);
                         $("#sprout-base-redirects-new-button").attr("href", uri);
                     }

@@ -24,11 +24,11 @@ class Settings extends Component
     {
         $sproutSeo = Craft::$app->getPlugins()->getPlugin('sprout-seo');
         $settings = null;
-        if ($sproutSeo){
+        if ($sproutSeo) {
             $settings = $sproutSeo->getSettings();
-        }else{
+        } else {
             $sproutRedirects = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-            if ($sproutRedirects){
+            if ($sproutRedirects) {
                 $settings = $sproutRedirects->getSettings();
             }
         }

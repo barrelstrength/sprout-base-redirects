@@ -38,8 +38,9 @@ class RedirectsController extends Controller
 
         parent::init();
     }
+
     /**
-     * @param string|null   $siteHandle
+     * @param string|null $siteHandle
      *
      * @return Response
      * @throws ForbiddenHttpException
@@ -82,8 +83,7 @@ class RedirectsController extends Controller
     {
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
-        if ($siteHandle === null)
-        {
+        if ($siteHandle === null) {
             $primarySite = Craft::$app->getSites()->getPrimarySite();
             $siteHandle = $primarySite->handle;
         }
@@ -108,7 +108,7 @@ class RedirectsController extends Controller
                     ]));
                 }
 
-                if (!$redirect){
+                if (!$redirect) {
                     $redirect = new Redirect();
                     $redirect->id = $redirectId;
                 }
@@ -178,7 +178,7 @@ class RedirectsController extends Controller
                 ]));
             }
 
-            if (!$redirect){
+            if (!$redirect) {
 
                 $redirect = new Redirect();
                 $redirect->id = $redirectId;

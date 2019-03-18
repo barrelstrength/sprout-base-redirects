@@ -29,6 +29,7 @@ class Redirects extends Component
     /**
      * @param $event
      * @param $pluginHandle
+     *
      * @throws Exception
      * @throws \Throwable
      * @throws \craft\errors\SiteNotFoundException
@@ -76,9 +77,9 @@ class Redirects extends Component
                 SproutBaseRedirects::$app->redirects->logRedirect($redirect->id, $currentSite);
 
                 if ($redirect->enabled && (int)$redirect->method !== 404) {
-                    if (UrlHelper::isAbsoluteUrl($redirect->newUrl)){
+                    if (UrlHelper::isAbsoluteUrl($redirect->newUrl)) {
                         Craft::$app->getResponse()->redirect($redirect->newUrl, $redirect->method);
-                    }else{
+                    } else {
                         Craft::$app->getResponse()->redirect($redirect->getAbsoluteNewUrl(), $redirect->method);
                     }
                     Craft::$app->end();
@@ -232,9 +233,9 @@ class Redirects extends Component
         /** @noinspection OneTimeUseVariablesInspection */
         $sproutSeo = Craft::$app->plugins->getPlugin('sprout-seo');
 
-        if ($sproutSeo){
+        if ($sproutSeo) {
             $pluginSettings = $sproutSeo->getSettings();
-        }else{
+        } else {
             $sproutRedirects = Craft::$app->plugins->getPlugin('sprout-redirects');
             $pluginSettings = $sproutRedirects->getSettings();
         }
@@ -273,7 +274,6 @@ class Redirects extends Component
             ++$redirect->count;
 
             Craft::$app->elements->saveElement($redirect, true);
-
         } catch (\Exception $e) {
             SproutBaseRedirects::error('Unable to log redirect: '.$e->getMessage());
         }
