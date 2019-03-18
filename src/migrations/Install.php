@@ -11,7 +11,7 @@ use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 use craft\db\Migration;
 use craft\models\Structure;
-use barrelstrength\sproutredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use craft\services\Plugins;
 
 /**

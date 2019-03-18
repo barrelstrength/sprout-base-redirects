@@ -7,7 +7,7 @@
 
 namespace barrelstrength\sproutbaseredirects\services;
 
-use barrelstrength\sproutredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;

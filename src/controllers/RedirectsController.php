@@ -10,8 +10,7 @@ namespace barrelstrength\sproutbaseredirects\controllers;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use barrelstrength\sproutredirects\models\Settings;
-use barrelstrength\sproutredirects\SproutRedirects;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use craft\base\Plugin;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
@@ -62,8 +61,8 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
         }
 
-        /** @var SproutRedirects $plugin */
-        $plugin = SproutRedirects::getInstance();
+        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
+        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
 
         /** @var Plugin $sproutSeoPlugin */
         $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
@@ -71,7 +70,7 @@ class RedirectsController extends Controller
 
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
-            'proFeaturesEnabled' => $sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO)
+            'proFeaturesEnabled' => ($sproutSeoPluginIsInstalled || $sproutRedirectsIsPro)
         ]);
     }
 
@@ -148,6 +147,10 @@ class RedirectsController extends Controller
             ]
         ];
 
+        /** @var SproutRedirects $plugin */
+        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
+        $sproutRedirectsEdition = $plugin->edition ?? 'lite';
+
         return $this->renderTemplate('sprout-base-redirects/redirects/_edit', [
             'currentSite' => $currentSite,
             'redirect' => $redirect,
@@ -156,7 +159,7 @@ class RedirectsController extends Controller
             'tabs' => $tabs,
             'continueEditingUrl' => $continueEditingUrl,
             'saveAsNewUrl' => $saveAsNewUrl,
-            'edition' => SproutRedirects::getInstance()->edition
+            'edition' => $sproutRedirectsEdition
         ]);
     }
 
