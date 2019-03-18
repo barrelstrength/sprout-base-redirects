@@ -16,6 +16,7 @@ use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
 use barrelstrength\sproutredirects\SproutRedirects;
 use Craft;
+use craft\base\Plugin;
 use craft\helpers\UrlHelper;
 use craft\elements\actions\Delete;
 use craft\elements\actions\Edit;
@@ -83,11 +84,11 @@ class Redirect extends Element
         /** @var SproutRedirects $plugin */
         $plugin = SproutRedirects::getInstance();
 
-        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
-            return false;
-        }
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
 
-        return true;
+        return $sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO);
     }
 
     /**
@@ -142,7 +143,11 @@ class Redirect extends Element
         /** @var SproutRedirects $plugin */
         $plugin = SproutRedirects::getInstance();
 
-        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if (!$sproutSeoPluginIsInstalled && $plugin->is(SproutRedirects::EDITION_LITE)) {
             return null;
         }
 
@@ -186,7 +191,11 @@ class Redirect extends Element
         /** @var SproutRedirects $plugin */
         $plugin = SproutRedirects::getInstance();
 
-        if ($plugin->is(SproutRedirects::EDITION_PRO)) {
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if ($sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO)) {
             $attributes['test'] = Craft::t('sprout-base-redirects', 'Test');
         }
 
@@ -220,7 +229,12 @@ class Redirect extends Element
     {
         /** @var SproutRedirects $plugin */
         $plugin = SproutRedirects::getInstance();
-        $proEdition = $plugin->is(SproutRedirects::EDITION_PRO);
+
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        $proEdition = $sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO);
 
         $sources = [
             [
@@ -264,7 +278,11 @@ class Redirect extends Element
         /** @var SproutRedirects $plugin */
         $plugin = SproutRedirects::getInstance();
 
-        if ($plugin->is(SproutRedirects::EDITION_PRO)) {
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if ($sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO)) {
 
             // Set Status
             $actions[] = SetStatus::class;

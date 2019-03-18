@@ -211,9 +211,9 @@ class Redirects extends Component
      *
      * @param string $uri
      *
-     * @return array
+     * @return string
      */
-    public function removeSlash($uri): array
+    public function removeSlash($uri): string
     {
         $slash = '/';
 

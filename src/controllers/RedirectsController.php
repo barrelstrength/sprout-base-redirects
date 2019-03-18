@@ -12,6 +12,7 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutredirects\models\Settings;
 use barrelstrength\sproutredirects\SproutRedirects;
+use craft\base\Plugin;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Craft;
@@ -61,9 +62,16 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
         }
 
+        /** @var SproutRedirects $plugin */
+        $plugin = SproutRedirects::getInstance();
+
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
-            'edition' => SproutRedirects::getInstance()->edition
+            'proFeaturesEnabled' => $sproutSeoPluginIsInstalled || $plugin->is(SproutRedirects::EDITION_PRO)
         ]);
     }
 

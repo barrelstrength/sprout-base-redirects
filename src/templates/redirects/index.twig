@@ -10,14 +10,14 @@
 {% set currentPluginHandle = craft.app.request.getSegment(1) %}
 
 {% block actionButton %}
-    {% if edition == 'pro' %}
+    {% if proFeaturesEnabled %}
         <div class="buttons">
             <a class="btn submit add icon" id="sprout-base-redirects-new-button"
                href="{{ url(currentPluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
         </div>
     {% else %}
         {{ sprout.upgradeToProButton({
-            url: "https://plugins.craftcms.com/sprout-redirects"
+            url: cpUrl('plugin-store/sprout-redirects')
         }) }}
     {% endif %}
 {% endblock %}

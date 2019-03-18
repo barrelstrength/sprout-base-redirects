@@ -10,10 +10,11 @@ namespace barrelstrength\sproutbaseredirects\elements\db;
 
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutredirects\SproutRedirects;
+use craft\base\Plugin;
 use craft\db\Connection;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
-
+use Craft;
 
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 
@@ -122,8 +123,12 @@ class RedirectQuery extends ElementQuery
         /** @var SproutRedirects $plugin */
         $plugin  = SproutRedirects::getInstance();
 
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
         // Only display 404s for LITE
-        if ($plugin->is(SproutRedirects::EDITION_LITE)) {
+        if (!$sproutSeoPluginIsInstalled && $plugin->is(SproutRedirects::EDITION_LITE)) {
             if ($this->method === null OR strpos($this->method, '404') === 0) {
                 // Only display 404s for All Redirects and 404 filters
                 $this->subQuery->andWhere(Db::parseParam(
@@ -136,7 +141,7 @@ class RedirectQuery extends ElementQuery
         }
 
         // Filter all methods for PRO
-        if ($plugin->is(SproutRedirects::EDITION_PRO) && $this->method) {
+        if ($sproutSeoPluginIsInstalled OR $plugin->is(SproutRedirects::EDITION_PRO) && $this->method) {
             $this->subQuery->andWhere(Db::parseParam(
                 'sproutseo_redirects.method', $this->method)
             );
