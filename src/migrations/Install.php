@@ -7,11 +7,12 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
+use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 
 use craft\db\Migration;
 use craft\models\Structure;
-use barrelstrength\sproutbaseredirects\models\Settings;
+use barrelstrength\sproutredirects\models\Settings;
 use craft\services\Plugins;
 
 class Install extends Migration
@@ -99,17 +100,13 @@ class Install extends Migration
         $settings = new Settings();
         $projectConfig = Craft::$app->getProjectConfig();
 
+        /** @var SproutSeo $sproutSeo */
         $sproutSeo = Craft::$app->getPlugins()->getPlugin('sprout-seo');
 
         if ($sproutSeo){
             $seoSettings = $sproutSeo->getSettings();
             if ($seoSettings->structureId){
                 $settings->structureId = $seoSettings->structureId;
-                //remove structure id from seo plugin
-                // Add our default plugin settings
-                $pluginHandle = 'sprout-seo';
-                $seoSettings->structureId = null;
-                $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY . '.' . $pluginHandle . '.settings', $seoSettings->toArray());
             }else{
                 $settings->structureId = $this->getStructureId();
             }
