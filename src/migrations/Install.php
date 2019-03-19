@@ -110,8 +110,8 @@ class Install extends Migration
         $settings = new Settings();
         $projectConfig = Craft::$app->getProjectConfig();
 
-        /** @var SproutSeo $sproutSeo */
-        $sproutSeo = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        /** @var SproutSeo $plugin */
+        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
 
         if ($plugin) {
             $seoSettings = $plugin->getSettings();

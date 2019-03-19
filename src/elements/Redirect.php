@@ -14,6 +14,7 @@ use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
+use barrelstrength\sproutredirects\SproutRedirects;
 use Craft;
 use craft\base\Plugin;
 use craft\helpers\UrlHelper;

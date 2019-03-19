@@ -8,9 +8,7 @@
 namespace barrelstrength\sproutbaseredirects\models;
 
 
-use barrelstrength\sproutbase\base\SproutSettingsInterface;
 use craft\base\Model;
-use Craft;
 
 /**
  *
