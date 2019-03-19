@@ -153,7 +153,8 @@ class Redirect extends Element
             return null;
         }
 
-        $currentPluginHandle = Craft::$app->request->getBodyParam('criteria.base') ?? 'sprout-redirects';
+        // @todo - Fix hard coded URL when releasing Redirects plugin
+        $currentPluginHandle = 'sprout-seo';
 
         $url = UrlHelper::cpUrl($currentPluginHandle.'/redirects/edit/'.$this->id);
 
