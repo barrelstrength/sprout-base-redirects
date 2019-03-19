@@ -43,8 +43,9 @@
     <input type="hidden" name="action"
            value="sprout-base-redirects/redirects/save-redirect">
     <input type="hidden" name="redirectId" value="{{ redirect.id }}">
+    {% set redirectUrl = currentPluginHandle ~ '/redirects' %}
     <input type="hidden" name="redirect"
-           value="{{ currentPluginHandle ~ '/redirects'|hash }}">
+           value="{{ redirectUrl|hash }}">
 
     {% if redirect.id %}
         <input type="hidden" name="redirectId"
