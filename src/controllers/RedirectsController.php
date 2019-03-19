@@ -27,15 +27,13 @@ use yii\web\ForbiddenHttpException;
  */
 class RedirectsController extends Controller
 {
-    private $currentPluginHandle;
-
     private $permissions = [];
 
     public function init()
     {
         $permissionNames = Settings::getSharedPermissions();
-        $this->currentPluginHandle = Craft::$app->request->getSegment(1);
-        $this->permissions = SproutBase::$app->settings->getSharedPermissions($permissionNames, 'sprout-redirects', $this->currentPluginHandle);
+        $pluginHandle = Craft::$app->request->getSegment(1);
+        $this->permissions = SproutBase::$app->settings->getSharedPermissions($permissionNames, 'sprout-redirects', $pluginHandle);
 
         parent::init();
     }
@@ -47,7 +45,7 @@ class RedirectsController extends Controller
      * @throws ForbiddenHttpException
      * @throws \craft\errors\SiteNotFoundException
      */
-    public function actionRedirectsIndexTemplate($siteHandle = null): Response
+    public function actionRedirectsIndexTemplate(string $pluginHandle, $siteHandle = null): Response
     {
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
@@ -72,6 +70,7 @@ class RedirectsController extends Controller
 
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
+            'pluginHandle' => $pluginHandle,
             'proFeaturesEnabled' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
         ]);
     }
@@ -88,7 +87,7 @@ class RedirectsController extends Controller
      * @throws NotFoundHttpException
      * @throws \craft\errors\SiteNotFoundException
      */
-    public function actionEditRedirect($redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
+    public function actionEditRedirectTemplate(string $pluginHandle, $redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
     {
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
@@ -131,8 +130,8 @@ class RedirectsController extends Controller
 
         $redirect->newUrl = $redirect->newUrl ?? '';
 
-        $continueEditingUrl = $this->currentPluginHandle.'/redirects/edit/{id}/'.$currentSite->handle;
-        $saveAsNewUrl = $this->currentPluginHandle.'/redirects/new/'.$currentSite->handle;
+        $continueEditingUrl = $pluginHandle.'/redirects/edit/{id}/'.$currentSite->handle;
+        $saveAsNewUrl = $pluginHandle.'/redirects/new/'.$currentSite->handle;
 
         $crumbs = [
             [
@@ -176,7 +175,7 @@ class RedirectsController extends Controller
     {
         $this->requirePostRequest();
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
-
+        
         $redirectId = Craft::$app->getRequest()->getBodyParam('redirectId');
         $siteId = Craft::$app->getRequest()->getBodyParam('siteId');
         $oldUrl = Craft::$app->getRequest()->getRequiredBodyParam('oldUrl');

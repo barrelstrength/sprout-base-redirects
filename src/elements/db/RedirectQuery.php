@@ -27,6 +27,13 @@ use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
  */
 class RedirectQuery extends ElementQuery
 {
+    /**
+     * Defined in redirects/index.twig
+     *
+     * @var string
+     */
+    public $pluginHandle;
+
     // General - Properties
     // =========================================================================
 
