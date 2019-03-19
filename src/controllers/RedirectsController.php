@@ -175,7 +175,7 @@ class RedirectsController extends Controller
     {
         $this->requirePostRequest();
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
-        
+
         $redirectId = Craft::$app->getRequest()->getBodyParam('redirectId');
         $siteId = Craft::$app->getRequest()->getBodyParam('siteId');
         $oldUrl = Craft::$app->getRequest()->getRequiredBodyParam('oldUrl');
