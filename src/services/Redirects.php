@@ -137,6 +137,9 @@ class Redirects extends Component
                     return $redirect;
                 }
             } else if ($baseSiteUrl.$redirect->oldUrl === $absoluteUrl) {
+                if ($redirect->newUrl === null) {
+                    $redirect->newUrl = '/';
+                }
                 return $redirect;
             }
         }
