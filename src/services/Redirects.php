@@ -111,7 +111,7 @@ class Redirects extends Component
     public function findUrl($absoluteUrl, $site)
     {
         $absoluteUrl = urldecode($absoluteUrl);
-        $baseSiteUrl = Craft::getAlias($site->baseUrl);
+        $baseSiteUrl = Craft::getAlias($site->getBaseUrl());
 
         $redirects = Redirect::find()
             ->siteId($site->id)
@@ -308,7 +308,7 @@ class Redirects extends Component
         /** @var Settings $seoSettings */
         $seoSettings = SproutBaseRedirects::$app->settings->getPluginSettings();
 
-        $baseUrl = Craft::getAlias($site->baseUrl);
+        $baseUrl = Craft::getAlias($site->getBaseUrl());
 
         $baseUrlMatch = mb_strpos($absoluteUrl, $baseUrl) === 0;
 

@@ -351,7 +351,7 @@ class Redirect extends Element
                     return ' - ';
                 }
 
-                $baseUrl = Craft::getAlias($site->baseUrl);
+                $baseUrl = Craft::getAlias($site->getBaseUrl());
                 $oldUrl = $baseUrl.$this->oldUrl;
 
                 return "<a href='{$oldUrl}' target='_blank' class='go'>Test</a>";
@@ -481,7 +481,7 @@ class Redirect extends Element
      */
     public function getAbsoluteNewUrl(): string
     {
-        $baseUrl = Craft::getAlias($this->getSite()->baseUrl);
+        $baseUrl = Craft::getAlias($this->getSite()->getBaseUrl());
 
         // @todo - remove ltrim after we update to saving and skipping beginning slashes
         $path = ltrim($this->newUrl, '/');
