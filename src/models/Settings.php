@@ -8,13 +8,15 @@
 namespace barrelstrength\sproutbaseredirects\models;
 
 
+use barrelstrength\sproutbase\base\SharedPermissionsInterface;
 use craft\base\Model;
 
 /**
  *
+ * @property array $sharedPermissions
  * @property array $settingsNavItems
  */
-class Settings extends Model
+class Settings extends Model implements SharedPermissionsInterface
 {
     /**
      * @var string
@@ -44,7 +46,7 @@ class Settings extends Model
     /**
      * @return array
      */
-    public static function getSharedPermissions(): array
+    public function getSharedPermissions(): array
     {
         return [
             'editRedirects'

@@ -31,14 +31,13 @@ class RedirectsController extends Controller
 
     public function init()
     {
-        $permissionNames = Settings::getSharedPermissions();
-        $pluginHandle = Craft::$app->request->getSegment(1);
-        $this->permissions = SproutBase::$app->settings->getSharedPermissions($permissionNames, 'sprout-redirects', $pluginHandle);
+        $this->permissions = SproutBase::$app->settings->getPluginPermissions(new Settings(), 'sprout-redirects');
 
         parent::init();
     }
 
     /**
+     * @param string      $pluginHandle
      * @param string|null $siteHandle
      *
      * @return Response
