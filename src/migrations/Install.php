@@ -11,8 +11,9 @@ use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 use craft\db\Migration;
 use craft\models\Structure;
-use barrelstrength\sproutbaseredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use craft\services\Plugins;
+use craft\services\ProjectConfig;
 
 /**
  *
@@ -107,24 +108,63 @@ class Install extends Migration
      */
     protected function insertDefaultSettings()
     {
-        $settings = new Settings();
-        $projectConfig = Craft::$app->getProjectConfig();
-
-        /** @var SproutSeo $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-
-        if ($plugin) {
-            $seoSettings = $plugin->getSettings();
-            if ($seoSettings->structureId) {
-                $settings->structureId = $seoSettings->structureId;
-            }else{
-                $settings->structureId = $this->getStructureId();
-            }
-        }
+        $settings = $this->getSproutRedirectsSettingsModel();
 
         // Add our default plugin settings
-        $pluginHandle = 'sprout-base-redirects';
-        $projectConfig->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $settings->toArray());
+        $pluginHandle = 'sprout-redirects';
+        Craft::$app->getProjectConfig()->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $settings->toArray());
+
+        // Remove unused settings
+        Craft::$app->getProjectConfig()->remove(Plugins::CONFIG_PLUGINS_KEY.'.sprout-base-redirects');
+    }
+
+    /**
+     * @return SproutRedirectsSettings
+     * @throws \craft\errors\StructureNotFoundException
+     */
+    private function getSproutRedirectsSettingsModel(): SproutRedirectsSettings
+    {
+        $projectConfig = Craft::$app->getProjectConfig();
+        $settings = new SproutRedirectsSettings();
+
+        $sproutRedirectSettings = $projectConfig->get('plugins.sprout-redirects.settings');
+
+        // If we already have settings and a structureId defined for Sprout Redirects
+        if ($sproutRedirectSettings &&
+            isset($sproutRedirectSettings['structureId']) &&
+            is_numeric($sproutRedirectSettings['structureId'])) {
+
+            $settings->structureId = $sproutRedirectSettings['structureId'];
+            return $settings;
+        }
+
+        // Need to fix how settings were stored in an earlier install
+        // @deprecate in future version
+        $sproutBaseRedirectSettings = $projectConfig->get('plugins.sprout-base-redirects.settings');
+
+        if ($sproutBaseRedirectSettings &&
+            isset($sproutBaseRedirectSettings['structureId']) &&
+            is_numeric($sproutBaseRedirectSettings['structureId'])) {
+
+            $settings->structureId = $sproutBaseRedirectSettings['structureId'];
+            return $settings;
+        }
+
+        // Need to check for how we stored data in Sprout SEO schema and migrate things if we find them
+        // @deprecate in future version
+        $sproutSeoSettings = $projectConfig->get('plugins.sprout-seo.settings');
+
+        if ($sproutSeoSettings &&
+            isset($sproutSeoSettings['structureId']) &&
+            is_numeric($sproutSeoSettings['structureId'])) {
+
+            $settings->structureId = $sproutSeoSettings['structureId'];
+            return $settings;
+        }
+
+        // If none of the above have an existing Structure ID, create a new one
+        $settings->structureId = $this->getStructureId();
+        return $settings;
     }
 
     /**

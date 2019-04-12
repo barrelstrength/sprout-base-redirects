@@ -17,10 +17,9 @@ use craft\base\Model;
  * @property array $settingsNavItems
  */
 class Settings extends Model implements SharedPermissionsInterface
-{
-    /**
-     * @var string
-     */
+{    /**
+ * @var string
+ */
     public $pluginNameOverride = '';
 
     /**
@@ -38,10 +37,6 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $total404Redirects = 250;
 
-    /**
-     * @var bool
-     */
-    public $enableMultilingualSitemaps = false;
 
     /**
      * @return array
