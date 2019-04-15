@@ -32,7 +32,6 @@ class Redirects extends Component
 {
     /**
      * @param $event
-     * @param $pluginHandle
      *
      * @throws Exception
      * @throws \Throwable
@@ -40,7 +39,7 @@ class Redirects extends Component
      * @throws \yii\base\ExitException
      * @throws \yii\base\InvalidConfigException
      */
-    public function handleRedirectsOnException($event, $pluginHandle)
+    public function handleRedirectsOnException($event)
     {
         $request = Craft::$app->getRequest();
 
@@ -70,9 +69,7 @@ class Redirects extends Component
             // Check if the requested URL needs to be redirected
             $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
 
-            /** @var SproutSeo $plugin */
-            $plugin = Craft::$app->plugins->getPlugin($pluginHandle);
-            $settings = $plugin->getSettings();
+            $settings = $this->getRedirectsSettings();
 
             if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
                 // Save new 404 Redirect
@@ -233,23 +230,9 @@ class Redirects extends Component
      */
     public function getStructureId()
     {
-        /**
-         * @var Settings $pluginSettings
-         */
-        $pluginSettings = null;
-        /** @noinspection OneTimeUseVariablesInspection */
-        $sproutSeo = Craft::$app->plugins->getPlugin('sprout-seo');
+        $settings = SproutBaseRedirects::$app->redirects->getRedirectsSettings();
 
-        if ($sproutSeo) {
-            $pluginSettings = $sproutSeo->getSettings();
-        } else {
-            /** @var Plugin $plugin */
-            $plugin = Craft::$app->plugins->getPlugin('sprout-redirects');
-            /** @var Settings $pluginSettings */
-            $pluginSettings = $plugin->getSettings();
-        }
-
-        return $pluginSettings->structureId ?? null;
+        return $settings->structureId ?? null;
     }
 
     /**
@@ -360,4 +343,22 @@ class Redirects extends Component
 
         return $redirect;
     }
+
+    /**
+     * @return Settings
+     */
+    public function getRedirectsSettings(): Settings
+    {
+        $projectConfig = Craft::$app->getProjectConfig();
+        $sproutRedirectsSettings = $projectConfig->get('plugins.sprout-redirects.settings');
+
+        $settings = new Settings();
+
+        if ($sproutRedirectsSettings){
+            $settings->setAttributes($sproutRedirectsSettings, false);
+        }
+
+        return $settings;
+    }
+
 }
