@@ -36,18 +36,13 @@
 
 {% block initJs %}
     {# Pass segment to the RedirectQuery class to build URLs across plugin use cases #}
-    var params = {'pluginHandle': '{{ craft.app.request.getSegment(1) }}'};
-    var criteria = Object.assign(Craft.defaultIndexCriteria, params);
+    var criteria = $.extend({}, Craft.defaultIndexCriteria);
+    criteria.pluginHandle = '{{ craft.app.request.getSegment(1) }}';
 
-    {# Only apply these values on a plugin integration. We will use the default values above
-       in Sprout Email so the Source filtering works as expected. #}
-    {#if (params.pluginHandle !== 'sprout-redirects') {#}
-    {#criteria = Object.assign(Craft.defaultIndexCriteria, params);#}
-    {#}#}
 
     Craft.elementIndex = Craft.createElementIndex('{{ elementType|e("js") }}', $('#main'), {
     context:        '{{ context }}',
-    storageKey:     'elementindex.{{ elementType }}',
+    storageKey:     'elementindex.{{ elementType|e("js") }}',
     criteria:       criteria
     });
 
