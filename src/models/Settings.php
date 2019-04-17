@@ -17,9 +17,10 @@ use craft\base\Model;
  * @property array $settingsNavItems
  */
 class Settings extends Model implements SharedPermissionsInterface
-{    /**
- * @var string
- */
+{
+    /**
+    * @var string
+    */
     public $pluginNameOverride = '';
 
     /**
@@ -37,7 +38,6 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $total404Redirects = 250;
 
-
     /**
      * @return array
      */
@@ -46,5 +46,13 @@ class Settings extends Model implements SharedPermissionsInterface
         return [
             'editRedirects'
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainPluginHandle(): string
+    {
+        return 'sprout-redirects';
     }
 }

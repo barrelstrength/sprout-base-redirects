@@ -1,5 +1,7 @@
 {% import "_includes/forms" as forms %}
 
+<input type="hidden" name="mainPlugindHandle" value="{{ settings.getMainPluginHandle() }}">
+
 {{ forms.lightswitchField({
     label: "Log 404 Redirects"|t('sprout-base-redirects'),
     instructions: "Log 'Page Not Found' errors as 404 Redirects. 404 Redirects will appear on the Redirects tab as a disabled 404 Redirect Element and can be updated to 301 or 302 Redirects."|t('sprout-base-redirects'),
@@ -17,6 +19,6 @@
         name: 'total404Redirects',
         size:'10',
         value: settings.total404Redirects,
-        errors: ''
+        errors: settings.getErrors('total404Redirects')
     }) }}
 </div>
