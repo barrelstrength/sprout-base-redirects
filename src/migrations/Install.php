@@ -134,7 +134,10 @@ class Install extends Migration
             isset($sproutRedirectSettings['structureId']) &&
             is_numeric($sproutRedirectSettings['structureId'])) {
 
+            $settings->pluginNameOverride = $sproutRedirectSettings['pluginNameOverride'];
             $settings->structureId = $sproutRedirectSettings['structureId'];
+            $settings->enable404RedirectLog = $sproutRedirectSettings['enable404RedirectLog'];
+            $settings->total404Redirects = $sproutRedirectSettings['total404Redirects'];
             return $settings;
         }
 
@@ -146,7 +149,10 @@ class Install extends Migration
             isset($sproutBaseRedirectSettings['structureId']) &&
             is_numeric($sproutBaseRedirectSettings['structureId'])) {
 
+            $settings->pluginNameOverride = $sproutBaseRedirectSettings['pluginNameOverride'];
             $settings->structureId = $sproutBaseRedirectSettings['structureId'];
+            $settings->enable404RedirectLog = $sproutBaseRedirectSettings['enable404RedirectLog'];
+            $settings->total404Redirects = $sproutBaseRedirectSettings['total404Redirects'];
             return $settings;
         }
 
@@ -158,7 +164,10 @@ class Install extends Migration
             isset($sproutSeoSettings['structureId']) &&
             is_numeric($sproutSeoSettings['structureId'])) {
 
+            $settings->pluginNameOverride = $sproutSeoSettings['pluginNameOverride'];
             $settings->structureId = $sproutSeoSettings['structureId'];
+            $settings->enable404RedirectLog = $sproutSeoSettings['enable404RedirectLog'];
+            $settings->total404Redirects = $sproutSeoSettings['total404Redirects'];
             return $settings;
         }
 
