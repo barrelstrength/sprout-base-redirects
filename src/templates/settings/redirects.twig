@@ -1,7 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-<input type="hidden" name="projectConfigHandle" value="{{ settings.getProjectConfigHandle() }}">
-<input type="hidden" name="projectConfigSettingsType" value="{{ className(settings) }}">
+<input type="hidden" name="sproutBaseSettingsType" value="{{ className(settings) }}">
 
 {{ forms.lightswitchField({
     label: "Log 404 Redirects"|t('sprout-base-redirects'),

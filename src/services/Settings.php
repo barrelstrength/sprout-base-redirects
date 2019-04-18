@@ -7,7 +7,11 @@
 
 namespace barrelstrength\sproutbaseredirects\services;
 
+use barrelstrength\sproutbase\SproutBase;
+use craft\base\Model;
+use craft\db\Query;
 use yii\base\Component;
+use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettings;
 
 use Craft;
 
@@ -35,5 +39,41 @@ class Settings extends Component
         }
 
         return $settings;
+    }
+
+    /**
+     * @return Model
+     */
+    public function getRedirectsSettings(): Model
+    {
+        $settings = SproutBase::$app->settings->getBaseSettings(RedirectsSettings::class);
+
+        return $settings;
+    }
+
+    /**
+     * @param array $settingsArray
+     * @return int
+     * @throws \yii\db\Exception
+     */
+    public function saveRedirectsSettings(array $settingsArray)
+    {
+        $result = SproutBase::$app->settings->saveBaseSettings($settingsArray,RedirectsSettings::class);
+
+        return $result;
+    }
+
+    /**
+     * @return array|bool
+     */
+    private function getRedirectsSettingsQuery()
+    {
+        $query = (new Query())
+            ->select(['settings'])
+            ->from(['{{%sproutbase_settings}}'])
+            ->where(['model' => RedirectsSettings::class])
+            ->one();
+
+        return $query;
     }
 }

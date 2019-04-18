@@ -48,12 +48,4 @@ class Settings extends Model implements SharedPermissionsInterface
             'editRedirects'
         ];
     }
-
-    /**
-     * @return string
-     */
-    public function getProjectConfigHandle(): string
-    {
-        return 'sprout-base-redirects';
-    }
 }

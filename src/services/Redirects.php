@@ -68,7 +68,7 @@ class Redirects extends Component
             // Check if the requested URL needs to be redirected
             $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
 
-            $settings = $this->getRedirectsSettings();
+            $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
 
             if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
                 // Save new 404 Redirect
@@ -229,7 +229,7 @@ class Redirects extends Component
      */
     public function getStructureId()
     {
-        $settings = SproutBaseRedirects::$app->redirects->getRedirectsSettings();
+        $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
 
         return $settings->structureId ?? null;
     }
@@ -342,22 +342,4 @@ class Redirects extends Component
 
         return $redirect;
     }
-
-    /**
-     * @return Settings
-     */
-    public function getRedirectsSettings(): Settings
-    {
-        $projectConfig = Craft::$app->getProjectConfig();
-        $sproutRedirectsSettings = $projectConfig->get('plugins.sprout-redirects.settings');
-
-        $settings = new Settings();
-
-        if ($sproutRedirectsSettings) {
-            $settings->setAttributes($sproutRedirectsSettings, false);
-        }
-
-        return $settings;
-    }
-
 }

@@ -7,8 +7,10 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
+use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Migration;
+use craft\db\Query;
 use craft\models\Structure;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use craft\services\Plugins;
@@ -108,11 +110,28 @@ class Install extends Migration
      */
     protected function insertDefaultSettings()
     {
+        $this->insertDefaultSettingsRow();
         $settings = $this->getSproutRedirectsSettingsModel();
 
         // Add our default plugin settings
-        $pluginHandle = self::PROJECT_CONFIG_HANDLE;
-        Craft::$app->getProjectConfig()->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $settings->toArray());
+        SproutBaseRedirects::$app->settings->saveRedirectsSettings($settings->toArray());
+    }
+
+    private function insertDefaultSettingsRow()
+    {
+        $query = (new Query())
+            ->select(['settings'])
+            ->from(['{{%sproutbase_settings}}'])
+            ->where(['model' => SproutRedirectsSettings::class])
+            ->one();
+
+        if (is_null($query)){
+            $settings = [
+                'model' => SproutRedirectsSettings::class
+            ];
+
+            $this->insert('{{%sproutbase_settings}}', $settings);
+        }
     }
 
     /**
@@ -131,10 +150,10 @@ class Install extends Migration
             isset($sproutBaseRedirectSettings['structureId']) &&
             is_numeric($sproutBaseRedirectSettings['structureId'])) {
 
-            $settings->pluginNameOverride = $sproutBaseRedirectSettings['pluginNameOverride'];
+            $settings->pluginNameOverride = $sproutBaseRedirectSettings['pluginNameOverride'] ?? null;
             $settings->structureId = $sproutBaseRedirectSettings['structureId'];
-            $settings->enable404RedirectLog = $sproutBaseRedirectSettings['enable404RedirectLog'];
-            $settings->total404Redirects = $sproutBaseRedirectSettings['total404Redirects'];
+            $settings->enable404RedirectLog = $sproutBaseRedirectSettings['enable404RedirectLog'] ?? null;
+            $settings->total404Redirects = $sproutBaseRedirectSettings['total404Redirects'] ?? null;
             return $settings;
         }
 
@@ -146,10 +165,10 @@ class Install extends Migration
             isset($sproutSeoSettings['structureId']) &&
             is_numeric($sproutSeoSettings['structureId'])) {
 
-            $settings->pluginNameOverride = $sproutSeoSettings['pluginNameOverride'];
+            $settings->pluginNameOverride = $sproutSeoSettings['pluginNameOverride'] ?? null;
             $settings->structureId = $sproutSeoSettings['structureId'];
-            $settings->enable404RedirectLog = $sproutSeoSettings['enable404RedirectLog'];
-            $settings->total404Redirects = $sproutSeoSettings['total404Redirects'];
+            $settings->enable404RedirectLog = $sproutSeoSettings['enable404RedirectLog'] ?? null;
+            $settings->total404Redirects = $sproutSeoSettings['total404Redirects'] ?? null;
             return $settings;
         }
 
