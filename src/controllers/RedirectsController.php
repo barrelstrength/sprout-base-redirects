@@ -77,6 +77,7 @@ class RedirectsController extends Controller
     /**
      * Edit a Redirect
      *
+     * @param string        $pluginHandle
      * @param null          $redirectId
      * @param null          $siteHandle
      * @param Redirect|null $redirect

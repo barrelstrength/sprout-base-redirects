@@ -12,9 +12,7 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
-use barrelstrength\sproutseo\SproutSeo;
 use Craft;
-use craft\base\Plugin;
 use craft\helpers\Json;
 use craft\models\Site;
 use yii\base\Component;
@@ -25,8 +23,9 @@ use yii\base\Exception;
 
 /**
  *
- * @property array $methods
- * @property int   $structureId
+ * @property array                                               $methods
+ * @property \barrelstrength\sproutbaseredirects\models\Settings $redirectsSettings
+ * @property int                                                 $structureId
  */
 class Redirects extends Component
 {
@@ -257,7 +256,7 @@ class Redirects extends Component
             $log['ipAddress'] = $_SERVER['REMOTE_ADDR'];
             $log['dateCreated'] = date('Y-m-d h:m:s');
 
-            SproutBaseRedirects::warning('404 - Page Not Found: '. Json::encode($log));
+            SproutBaseRedirects::warning('404 - Page Not Found: '.Json::encode($log));
 
             /**
              * @var Redirect $redirect
@@ -354,7 +353,7 @@ class Redirects extends Component
 
         $settings = new Settings();
 
-        if ($sproutRedirectsSettings){
+        if ($sproutRedirectsSettings) {
             $settings->setAttributes($sproutRedirectsSettings, false);
         }
 

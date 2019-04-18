@@ -97,7 +97,7 @@ class RedirectQuery extends ElementQuery
         if ($this->structureId === null) {
             $this->structureId = SproutBaseRedirects::$app->redirects->getStructureId();
         }
-        
+
         $this->joinElementTable('sproutseo_redirects');
 
         $this->query->select([
