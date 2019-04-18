@@ -253,7 +253,7 @@ class Redirect extends Element
             $methods = SproutBaseRedirects::$app->redirects->getMethods();
 
             foreach ($methods as $code => $method) {
-                
+
                 $key = 'method:'.$code;
 
                 $sources[] = [

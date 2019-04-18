@@ -13,14 +13,15 @@ use craft\base\Model;
 
 /**
  *
- * @property array $sharedPermissions
- * @property array $settingsNavItems
+ * @property array  $sharedPermissions
+ * @property string $mainPluginHandle
+ * @property array  $settingsNavItems
  */
 class Settings extends Model implements SharedPermissionsInterface
 {
     /**
-    * @var string
-    */
+     * @var string
+     */
     public $pluginNameOverride = '';
 
     /**

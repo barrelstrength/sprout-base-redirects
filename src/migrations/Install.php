@@ -7,17 +7,16 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
-use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 use craft\db\Migration;
 use craft\models\Structure;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use craft\services\Plugins;
-use craft\services\ProjectConfig;
 
 /**
  *
- * @property null|int $structureId
+ * @property \barrelstrength\sproutbaseredirects\models\Settings $sproutRedirectsSettingsModel
+ * @property null|int                                            $structureId
  */
 class Install extends Migration
 {
