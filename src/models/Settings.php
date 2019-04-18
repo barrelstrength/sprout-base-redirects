@@ -51,8 +51,8 @@ class Settings extends Model implements SharedPermissionsInterface
     /**
      * @return string
      */
-    public function getMainPluginHandle(): string
+    public function getProjectConfigHandle(): string
     {
-        return 'sprout-redirects';
+        return 'sprout-base-redirects';
     }
 }

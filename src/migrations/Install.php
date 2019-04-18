@@ -21,6 +21,7 @@ use craft\services\ProjectConfig;
  */
 class Install extends Migration
 {
+    const PROJECT_CONFIG_HANDLE = 'sprout-base-redirects';
     // Public Properties
     // =========================================================================
 
@@ -111,11 +112,8 @@ class Install extends Migration
         $settings = $this->getSproutRedirectsSettingsModel();
 
         // Add our default plugin settings
-        $pluginHandle = 'sprout-redirects';
+        $pluginHandle = self::PROJECT_CONFIG_HANDLE;
         Craft::$app->getProjectConfig()->set(Plugins::CONFIG_PLUGINS_KEY.'.'.$pluginHandle.'.settings', $settings->toArray());
-
-        // Remove unused settings
-        Craft::$app->getProjectConfig()->remove(Plugins::CONFIG_PLUGINS_KEY.'.sprout-base-redirects');
     }
 
     /**
@@ -126,24 +124,9 @@ class Install extends Migration
     {
         $projectConfig = Craft::$app->getProjectConfig();
         $settings = new SproutRedirectsSettings();
+        $pluginHandle = self::PROJECT_CONFIG_HANDLE;
 
-        $sproutRedirectSettings = $projectConfig->get('plugins.sprout-redirects.settings');
-
-        // If we already have settings and a structureId defined for Sprout Redirects
-        if ($sproutRedirectSettings &&
-            isset($sproutRedirectSettings['structureId']) &&
-            is_numeric($sproutRedirectSettings['structureId'])) {
-
-            $settings->pluginNameOverride = $sproutRedirectSettings['pluginNameOverride'];
-            $settings->structureId = $sproutRedirectSettings['structureId'];
-            $settings->enable404RedirectLog = $sproutRedirectSettings['enable404RedirectLog'];
-            $settings->total404Redirects = $sproutRedirectSettings['total404Redirects'];
-            return $settings;
-        }
-
-        // Need to fix how settings were stored in an earlier install
-        // @deprecate in future version
-        $sproutBaseRedirectSettings = $projectConfig->get('plugins.sprout-base-redirects.settings');
+        $sproutBaseRedirectSettings = $projectConfig->get('plugins.'.$pluginHandle.'.settings');
 
         if ($sproutBaseRedirectSettings &&
             isset($sproutBaseRedirectSettings['structureId']) &&

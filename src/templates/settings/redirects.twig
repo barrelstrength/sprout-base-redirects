@@ -1,6 +1,7 @@
 {% import "_includes/forms" as forms %}
 
-<input type="hidden" name="mainPlugindHandle" value="{{ settings.getMainPluginHandle() }}">
+<input type="hidden" name="projectConfigHandle" value="{{ settings.getProjectConfigHandle() }}">
+<input type="hidden" name="projectConfigSettingsType" value="{{ className(settings) }}">
 
 {{ forms.lightswitchField({
     label: "Log 404 Redirects"|t('sprout-base-redirects'),
@@ -8,7 +9,8 @@
     name: 'enable404RedirectLog',
     toggle: 'settings-total-404redirects',
     on: settings.enable404RedirectLog ? true : false,
-    onLabel: "Enable"|t('sprout-base-redirects')
+    onLabel: "Enable"|t('sprout-base-redirects'),
+    first: true
 }) }}
 
 <div id="settings-total-404redirects"
