@@ -7,13 +7,13 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
 use craft\models\Structure;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
-use craft\services\Plugins;
+use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
 
 /**
  *
@@ -22,7 +22,6 @@ use craft\services\Plugins;
  */
 class Install extends Migration
 {
-    const PROJECT_CONFIG_HANDLE = 'sprout-base-redirects';
     // Public Properties
     // =========================================================================
 
@@ -66,6 +65,11 @@ class Install extends Migration
      */
     protected function createTables()
     {
+        $migration = new SproutBaseInstall();
+        ob_start();
+        $migration->safeUp();
+        ob_end_clean();
+
         $table = '{{%sproutseo_redirects}}';
 
         if (!$this->db->tableExists($table)) {
@@ -109,78 +113,31 @@ class Install extends Migration
      */
     public function insertDefaultSettings()
     {
-        $this->insertDefaultSettingsRow();
-        $settings = $this->getSproutRedirectsSettingsModel();
-
-        // Add our default plugin settings
-        SproutBaseRedirects::$app->settings->saveRedirectsSettings($settings->toArray());
-    }
-
-    private function insertDefaultSettingsRow()
-    {
-        $query = (new Query())
-            ->select(['settings'])
+        $settingsRow = (new Query())
+            ->select(['*'])
             ->from(['{{%sprout_settings}}'])
             ->where(['model' => SproutRedirectsSettings::class])
             ->one();
 
-        if (is_null($query)){
-            $settings = [
-                'model' => SproutRedirectsSettings::class
+        if (is_null($settingsRow)){
+
+            $settings = new Settings();
+            $settings->structureId = $this->createStructureId();
+
+            $settingsArray = [
+                'model' => SproutRedirectsSettings::class,
+                'settings' => json_encode($settings->toArray())
             ];
 
-            $this->insert('{{%sprout_settings}}', $settings);
+            $this->insert('{{%sprout_settings}}', $settingsArray);
         }
-    }
-
-    /**
-     * @return SproutRedirectsSettings
-     * @throws \craft\errors\StructureNotFoundException
-     */
-    private function getSproutRedirectsSettingsModel(): SproutRedirectsSettings
-    {
-        $projectConfig = Craft::$app->getProjectConfig();
-        $settings = new SproutRedirectsSettings();
-        $pluginHandle = self::PROJECT_CONFIG_HANDLE;
-
-        $sproutBaseRedirectSettings = $projectConfig->get('plugins.'.$pluginHandle.'.settings');
-
-        if ($sproutBaseRedirectSettings &&
-            isset($sproutBaseRedirectSettings['structureId']) &&
-            is_numeric($sproutBaseRedirectSettings['structureId'])) {
-
-            $settings->pluginNameOverride = $sproutBaseRedirectSettings['pluginNameOverride'] ?? null;
-            $settings->structureId = $sproutBaseRedirectSettings['structureId'];
-            $settings->enable404RedirectLog = $sproutBaseRedirectSettings['enable404RedirectLog'] ?? null;
-            $settings->total404Redirects = $sproutBaseRedirectSettings['total404Redirects'] ?? null;
-            return $settings;
-        }
-
-        // Need to check for how we stored data in Sprout SEO schema and migrate things if we find them
-        // @deprecate in future version
-        $sproutSeoSettings = $projectConfig->get('plugins.sprout-seo.settings');
-
-        if ($sproutSeoSettings &&
-            isset($sproutSeoSettings['structureId']) &&
-            is_numeric($sproutSeoSettings['structureId'])) {
-
-            $settings->pluginNameOverride = $sproutSeoSettings['pluginNameOverride'] ?? null;
-            $settings->structureId = $sproutSeoSettings['structureId'];
-            $settings->enable404RedirectLog = $sproutSeoSettings['enable404RedirectLog'] ?? null;
-            $settings->total404Redirects = $sproutSeoSettings['total404Redirects'] ?? null;
-            return $settings;
-        }
-
-        // If none of the above have an existing Structure ID, create a new one
-        $settings->structureId = $this->getStructureId();
-        return $settings;
     }
 
     /**
      * @return int|null
      * @throws \craft\errors\StructureNotFoundException
      */
-    private function getStructureId()
+    private function createStructureId()
     {
         $maxLevels = 1;
         $structure = new Structure();
