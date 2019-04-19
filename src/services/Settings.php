@@ -62,18 +62,4 @@ class Settings extends Component
 
         return $result;
     }
-
-    /**
-     * @return array|bool
-     */
-    private function getRedirectsSettingsQuery()
-    {
-        $query = (new Query())
-            ->select(['settings'])
-            ->from(['{{%sproutbase_settings}}'])
-            ->where(['model' => RedirectsSettings::class])
-            ->one();
-
-        return $query;
-    }
 }
