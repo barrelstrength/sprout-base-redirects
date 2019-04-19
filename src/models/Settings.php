@@ -10,6 +10,7 @@ namespace barrelstrength\sproutbaseredirects\models;
 
 use barrelstrength\sproutbase\base\SharedPermissionsInterface;
 use craft\base\Model;
+use Craft;
 
 /**
  *
@@ -38,6 +39,24 @@ class Settings extends Model implements SharedPermissionsInterface
      * @var int
      */
     public $total404Redirects = 250;
+
+    public function getSettingsNavItems(): array
+    {
+        return [
+            'general' => [
+                'label' => Craft::t('sprout-base-sitemaps', 'General'),
+                'url' => 'sprout-redirects/settings/general',
+                'selected' => 'general',
+                'template' => 'sprout-base-redirects/settings/general'
+            ],
+            'redirects' => [
+                'label' => Craft::t('sprout-redirects', 'Redirects'),
+                'url' => 'sprout-redirects/settings/redirects',
+                'selected' => 'redirects',
+                'template' => 'sprout-base-redirects/settings/redirects'
+            ]
+        ];
+    }
 
     /**
      * @return array

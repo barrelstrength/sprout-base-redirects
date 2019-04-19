@@ -1,5 +1,7 @@
 {% import "_includes/forms" as forms %}
 
+<input type="hidden" name="sproutBaseSettingsType" value="{{ className(settings) }}">
+
 {{ forms.textField({
     label: "Plugin Name"|t('sprout-seo'),
     instructions: "Intuitive, human-readable plugin name for the end user."|t('sprout-seo'),
