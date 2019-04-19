@@ -1,5 +1,5 @@
 (function($) {
-    var RedirectIndex = Garnish.Base.extend({
+    window.RedirectIndex = Garnish.Base.extend({
         $menu: null,
         $form: null,
 
@@ -22,8 +22,6 @@
             });
         },
     });
-
-    window.RedirectIndex = RedirectIndex;
 
 })(jQuery);
 
