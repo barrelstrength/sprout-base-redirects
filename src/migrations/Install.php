@@ -41,6 +41,7 @@ class Install extends Migration
     public function safeUp(): bool
     {
         $this->createTables();
+        $this->insertDefaultSettings();
         return true;
     }
 
@@ -83,8 +84,6 @@ class Install extends Migration
             $this->createIndexes();
             $this->addForeignKeys();
         }
-
-        $this->insertDefaultSettings();
     }
 
     protected function createIndexes()
@@ -108,7 +107,7 @@ class Install extends Migration
      * @throws \yii\base\NotSupportedException
      * @throws \yii\web\ServerErrorHttpException
      */
-    protected function insertDefaultSettings()
+    public function insertDefaultSettings()
     {
         $this->insertDefaultSettingsRow();
         $settings = $this->getSproutRedirectsSettingsModel();
