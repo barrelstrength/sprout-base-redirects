@@ -44,13 +44,13 @@ class Settings extends Model implements SharedPermissionsInterface
     {
         return [
             'general' => [
-                'label' => Craft::t('sprout-base-sitemaps', 'General'),
+                'label' => Craft::t('sprout-base-redirects', 'General'),
                 'url' => 'sprout-redirects/settings/general',
                 'selected' => 'general',
                 'template' => 'sprout-base-redirects/settings/general'
             ],
             'redirects' => [
-                'label' => Craft::t('sprout-redirects', 'Redirects'),
+                'label' => Craft::t('sprout-base-redirects', 'Redirects'),
                 'url' => 'sprout-redirects/settings/redirects',
                 'selected' => 'redirects',
                 'template' => 'sprout-base-redirects/settings/redirects'
