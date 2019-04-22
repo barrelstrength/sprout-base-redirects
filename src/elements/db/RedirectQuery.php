@@ -62,19 +62,6 @@ class RedirectQuery extends ElementQuery
     }
 
     /**
-     * @inheritdoc
-     */
-    public function __construct($elementType, array $config = [])
-    {
-        // Default orderBy
-        if (!isset($config['orderBy'])) {
-            $config['orderBy'] = 'sproutseo_redirects.dateCreated';
-        }
-
-        parent::__construct($elementType, $config);
-    }
-
-    /**
      * @param false|int|int[]|null $id
      *
      * @return $this|ElementQuery
