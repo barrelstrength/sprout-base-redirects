@@ -13,8 +13,10 @@ use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
 use Craft;
+use craft\events\ExceptionEvent;
 use craft\helpers\Json;
 use craft\models\Site;
+use Twig\Error\RuntimeError as TwigRuntimeError;
 use yii\base\Component;
 use craft\helpers\UrlHelper;
 use yii\web\HttpException;
@@ -38,8 +40,9 @@ class Redirects extends Component
      * @throws \yii\base\ExitException
      * @throws \yii\base\InvalidConfigException
      */
-    public function handleRedirectsOnException($event)
+    public function handleRedirectsOnException(ExceptionEvent $event)
     {
+
         $request = Craft::$app->getRequest();
 
         // Only handle front-end site requests that are not live preview
@@ -50,9 +53,8 @@ class Redirects extends Component
         $exception = $event->exception;
 
         // Rendering Twig can generate a 404 also: i.e. {% exit 404 %}
-        if ($event->exception instanceof \Twig_Error_Runtime) {
+        if ($exception instanceof TwigRuntimeError) {
             // If this is a Twig Runtime error, use the previous exception
-            /** @var \Twig_Error_Runtime $exception */
             $exception = $exception->getPrevious();
         }
 
@@ -76,6 +78,7 @@ class Redirects extends Component
             }
 
             if ($redirect) {
+
                 SproutBaseRedirects::$app->redirects->logRedirect($redirect->id, $currentSite);
 
                 if ($redirect->enabled && (int)$redirect->method !== 404) {
@@ -313,6 +316,7 @@ class Redirects extends Component
         $redirect->siteId = $site->id;
 
         if (!Craft::$app->elements->saveElement($redirect)) {
+            Craft::warning($redirect->getErrors(), 'sprout-base-redirects');
             return null;
         }
 
