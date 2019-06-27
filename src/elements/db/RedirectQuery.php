@@ -119,6 +119,11 @@ class RedirectQuery extends ElementQuery
             $this->subQuery->andWhere(Db::parseParam(
                 'sproutseo_redirects.method', $this->method)
             );
+        } else {
+            // All redirects view only shows 301s and 302s and excludes 404s
+            $this->subQuery->andWhere(Db::parseParam(
+                'sproutseo_redirects.method', [301, 302])
+            );
         }
 
         $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
@@ -128,7 +133,9 @@ class RedirectQuery extends ElementQuery
         $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
 
         if (!$sproutSeoPluginIsInstalled || !$sproutRedirectsIsPro) {
-            $this->query->limit(3);
+            if ($this->method !== 404) {
+                $this->query->limit(3);
+            }
         }
 
         return parent::beforePrepare();
