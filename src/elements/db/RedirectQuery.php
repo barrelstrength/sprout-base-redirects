@@ -8,6 +8,7 @@
 namespace barrelstrength\sproutbaseredirects\elements\db;
 
 
+use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutredirects\SproutRedirects;
 use craft\base\Plugin;
@@ -114,33 +115,20 @@ class RedirectQuery extends ElementQuery
             );
         }
 
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsLite = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_LITE) : false;
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
+        if ($this->method) {
+            $this->subQuery->andWhere(Db::parseParam(
+                'sproutseo_redirects.method', $this->method)
+            );
+        }
+
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
         /** @var Plugin $sproutSeoPlugin */
         $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
         $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
 
-        // Only display 404s for LITE
-        if (!$sproutSeoPluginIsInstalled && $sproutRedirectsIsLite) {
-            if ($this->method === null || $this->method === 404) {
-                // Only display 404s for All Redirects and 404 filters
-                $this->subQuery->andWhere(Db::parseParam(
-                    'sproutseo_redirects.method', 404)
-                );
-            } else {
-                // Don't display any results for 301s, 302s
-                $this->query->limit(0);
-            }
-        }
-
-        // Filter all methods for PRO
-        if ($sproutSeoPluginIsInstalled OR $sproutRedirectsIsPro && $this->method) {
-            $this->subQuery->andWhere(Db::parseParam(
-                'sproutseo_redirects.method', $this->method)
-            );
+        if (!$sproutSeoPluginIsInstalled || !$sproutRedirectsIsPro) {
+            $this->query->limit(3);
         }
 
         return parent::beforePrepare();

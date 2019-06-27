@@ -7,6 +7,7 @@
 
 namespace barrelstrength\sproutbaseredirects\elements;
 
+use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangePermanentMethod;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangeTemporaryMethod;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
@@ -15,6 +16,7 @@ use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
 use barrelstrength\sproutredirects\SproutRedirects;
+use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 use craft\base\Plugin;
 use craft\helpers\UrlHelper;
@@ -141,18 +143,6 @@ class Redirect extends Element
      */
     public function getCpEditUrl()
     {
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsLite = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_LITE) : false;
-
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
-        if (!$sproutSeoPluginIsInstalled && $sproutRedirectsIsLite) {
-            return null;
-        }
-
         $pluginHandle = Craft::$app->request->getBodyParam('criteria.pluginHandle');
 
         $url = UrlHelper::cpUrl($pluginHandle.'/redirects/edit/'.$this->id);
@@ -187,20 +177,9 @@ class Redirect extends Element
             'oldUrl' => Craft::t('sprout-base-redirects', 'Old Url'),
             'newUrl' => Craft::t('sprout-base-redirects', 'New Url'),
             'method' => Craft::t('sprout-base-redirects', 'Method'),
-            'count' => Craft::t('sprout-base-redirects', 'Count')
+            'count' => Craft::t('sprout-base-redirects', 'Count'),
+            'test' => Craft::t('sprout-base-redirects', 'Test')
         ];
-
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
-
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
-        if ($sproutSeoPluginIsInstalled || $sproutRedirectsIsPro) {
-            $attributes['test'] = Craft::t('sprout-base-redirects', 'Test');
-        }
 
         return $attributes;
     }
@@ -230,40 +209,28 @@ class Redirect extends Element
      */
     protected static function defineSources(string $context = null): array
     {
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
-
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
-        $proEdition = $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro;
-
         $sources = [
             [
                 'key' => '*',
-                'label' => $proEdition ? Craft::t('sprout-base-redirects', 'All redirects') : Craft::t('sprout-base-redirects', '404 - Page Not Found'),
+                'label' => Craft::t('sprout-base-redirects', 'All redirects'),
                 'structureId' => SproutBaseRedirects::$app->redirects->getStructureId(),
                 'structureEditable' => true
             ]
         ];
 
-        if ($proEdition) {
-            $methods = SproutBaseRedirects::$app->redirects->getMethods();
+        $methods = SproutBaseRedirects::$app->redirects->getMethods();
 
-            foreach ($methods as $code => $method) {
+        foreach ($methods as $code => $method) {
 
-                $key = 'method:'.$code;
+            $key = 'method:'.$code;
 
-                $sources[] = [
-                    'key' => $key,
-                    'label' => $method,
-                    'criteria' => ['method' => $code],
-                    'structureId' => SproutBaseRedirects::$app->redirects->getStructureId(),
-                    'structureEditable' => true
-                ];
-            }
+            $sources[] = [
+                'key' => $key,
+                'label' => $method,
+                'criteria' => ['method' => $code],
+                'structureId' => SproutBaseRedirects::$app->redirects->getStructureId(),
+                'structureEditable' => true
+            ];
         }
 
         return $sources;
@@ -280,37 +247,26 @@ class Redirect extends Element
     {
         $actions = [];
 
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
+        // Set Status
+        $actions[] = SetStatus::class;
 
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+        // Edit
+        $actions[] = Craft::$app->getElements()->createAction([
+            'type' => Edit::class,
+            'label' => Craft::t('sprout-base-redirects', 'Edit Redirect'),
+        ]);
 
-        if ($sproutSeoPluginIsInstalled || $sproutRedirectsIsPro) {
+        // Change Permanent Method
+        $actions[] = Craft::$app->getElements()->createAction([
+            'type' => ChangePermanentMethod::class,
+            'successMessage' => Craft::t('sprout-base-redirects', 'Redirects updated.'),
+        ]);
 
-            // Set Status
-            $actions[] = SetStatus::class;
-
-            // Edit
-            $actions[] = Craft::$app->getElements()->createAction([
-                'type' => Edit::class,
-                'label' => Craft::t('sprout-base-redirects', 'Edit Redirect'),
-            ]);
-
-            // Change Permanent Method
-            $actions[] = Craft::$app->getElements()->createAction([
-                'type' => ChangePermanentMethod::class,
-                'successMessage' => Craft::t('sprout-base-redirects', 'Redirects updated.'),
-            ]);
-
-            // Change Temporary Method
-            $actions[] = Craft::$app->getElements()->createAction([
-                'type' => ChangeTemporaryMethod::class,
-                'successMessage' => Craft::t('sprout-base-redirects', 'Redirects updated.'),
-            ]);
-        }
+        // Change Temporary Method
+        $actions[] = Craft::$app->getElements()->createAction([
+            'type' => ChangeTemporaryMethod::class,
+            'successMessage' => Craft::t('sprout-base-redirects', 'Redirects updated.'),
+        ]);
 
         // Delete
         $actions[] = Craft::$app->getElements()->createAction([

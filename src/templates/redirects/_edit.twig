@@ -1,5 +1,8 @@
 {% extends "sprout-base-redirects/_layouts/base" %}
 {% import "_includes/forms" as forms %}
+{% import 'sprout-base/_includes/sproutcp' as sprout %}
+
+{% do view.registerAssetBundle("barrelstrength\\sproutbase\\web\\assets\\cp\\CpAsset") %}
 
 {% set title = (redirect.id != "" ? "Edit Redirect"|t('sprout-base-redirects') : "Create a new redirect"|t('sprout-base-redirects')) %}
 {% set currentPluginHandle = craft.app.request.getSegment(1) %}
@@ -14,27 +17,35 @@
 {% set selectedItem = currentSite %}
 
 {% block actionButton %}
-    <div class="btngroup submit first">
-        <input type="submit" class="btn submit" value="{{ 'Save'|t('sprout-base-redirects') }}">
-        <div class="btn submit menubtn"></div>
-        <div class="menu">
-            <ul>
-                <li><a class="formsubmit"
-                       data-redirect="{{ continueEditingUrl|hash }}">{{ "Save and continue editing"|t('sprout-base-redirects') }}
-                        <span class="shortcut">⌘S</span></a></li>
-                <li><a class="formsubmit"
-                       data-redirect="{{ saveAsNewUrl|hash }}">{{ "Save and add another"|t('sprout-base-redirects') }}</a>
-                </li>
-                {% if redirect.id is not null %}
-                    <hr>
-                    <ul>
-                        <li>
-                            <a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ cpUrl(currentPluginHandle ~ '/redirects/' ~ currentSite.handle)|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a>
-                        </li>
-                    </ul>
-                {% endif %}
-            </ul>
+    <div class="buttons">
+        <div class="btngroup submit first">
+            <input type="submit" class="btn submit" value="{{ 'Save'|t('sprout-base-redirects') }}">
+            <div class="btn submit menubtn"></div>
+            <div class="menu">
+                <ul>
+                    <li><a class="formsubmit"
+                           data-redirect="{{ continueEditingUrl|hash }}">{{ "Save and continue editing"|t('sprout-base-redirects') }}
+                            <span class="shortcut">⌘S</span></a></li>
+                    <li><a class="formsubmit"
+                           data-redirect="{{ saveAsNewUrl|hash }}">{{ "Save and add another"|t('sprout-base-redirects') }}</a>
+                    </li>
+                    {% if redirect.id is not null %}
+                        <hr>
+                        <ul>
+                            <li>
+                                <a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ cpUrl(currentPluginHandle ~ '/redirects/' ~ currentSite.handle)|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
+        {% if not isPro %}
+            {{ sprout.upgradeToProButton({
+                url: cpUrl('sprout-redirects/upgrade'),
+                title: "Upgrade to Sprout Redirects PRO to manage Unlimited Redirects"|t('sprout-base-redirects')
+            }) }}
+        {% endif %}
     </div>
 {% endblock %}
 

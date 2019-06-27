@@ -59,9 +59,7 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
         }
 
-        /** @var Plugin $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
         /** @var Plugin $sproutSeoPlugin */
         $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
@@ -70,7 +68,7 @@ class RedirectsController extends Controller
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
             'pluginHandle' => $pluginHandle,
-            'proFeaturesEnabled' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
+            'isPro' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
         ]);
     }
 
@@ -148,9 +146,11 @@ class RedirectsController extends Controller
             ]
         ];
 
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsEdition = $plugin->edition ?? 'lite';
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
+
+        /** @var Plugin $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
 
         return $this->renderTemplate('sprout-base-redirects/redirects/_edit', [
             'currentSite' => $currentSite,
@@ -160,7 +160,7 @@ class RedirectsController extends Controller
             'tabs' => $tabs,
             'continueEditingUrl' => $continueEditingUrl,
             'saveAsNewUrl' => $saveAsNewUrl,
-            'edition' => $sproutRedirectsEdition
+            'isPro' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
         ]);
     }
 
