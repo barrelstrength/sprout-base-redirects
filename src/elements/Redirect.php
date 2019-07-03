@@ -206,7 +206,10 @@ class Redirect extends Element
                 'key' => '*',
                 'label' => Craft::t('sprout-base-redirects', 'All redirects'),
                 'structureId' => SproutBaseRedirects::$app->redirects->getStructureId(),
-                'structureEditable' => true
+                'structureEditable' => true,
+                'criteria' => [
+                    'method' => [301, 302]
+                ]
             ]
         ];
 
@@ -431,9 +434,14 @@ class Redirect extends Element
      */
     public function validateEdition($attribute)
     {
-        $sproutRedirectsLite = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_LITE);
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
-        if ($sproutRedirectsLite && $this->method != RedirectMethods::PageNotFound) {
+        /** @var SproutSeo $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if ((!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) && $this->method !== RedirectMethods::PageNotFound) {
+
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
 
             if ($count >= 3){
