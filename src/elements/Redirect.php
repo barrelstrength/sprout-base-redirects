@@ -83,15 +83,7 @@ class Redirect extends Element
      */
     public static function hasStatuses(): bool
     {
-        /** @var SproutRedirects $plugin */
-        $plugin = Craft::$app->getPlugins()->getPlugin('sprout-redirects');
-        $sproutRedirectsIsPro = $plugin !== null ? $plugin->is(SproutRedirects::EDITION_PRO) : false;
-
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
-        return $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro;
+        return true;
     }
 
     /**
