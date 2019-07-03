@@ -346,4 +346,19 @@ class Redirects extends Component
 
         return $redirect;
     }
+
+    /**
+     * @return int|string
+     */
+    public function getTotalNon404Redirects()
+    {
+        $count = Redirect::find()
+            ->where('method !=:method', [
+                ':method' => RedirectMethods::PageNotFound
+            ])
+            ->anyStatus()
+            ->count();
+
+        return $count;
+    }
 }

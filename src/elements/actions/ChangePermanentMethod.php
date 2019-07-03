@@ -7,8 +7,10 @@
 
 namespace barrelstrength\sproutbaseredirects\elements\actions;
 
+use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
+use barrelstrength\sproutredirects\SproutRedirects;
 use craft\base\ElementAction;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
@@ -64,6 +66,16 @@ class ChangePermanentMethod extends ElementAction
     public function performAction(ElementQueryInterface $query): bool
     {
         $elementIds = $query->ids();
+
+        $sproutRedirectsLite = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_LITE);
+        if ($sproutRedirectsLite){
+            $total = count($elementIds);
+            $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
+            if ($count >= 3 || $total + $count > 3){
+                $this->setMessage(Craft::t('sprout-base-redirects', 'Please upgrade to PRO to save more than 3 redirects'));
+                return false;
+            }
+        }
 
         $response = SproutBaseRedirects::$app->redirects->updateRedirectMethod($elementIds, RedirectMethods::Permanent);
 

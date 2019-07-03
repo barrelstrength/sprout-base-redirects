@@ -415,6 +415,7 @@ class Redirect extends Element
         return [
             [['oldUrl'], 'required'],
             ['method', 'validateMethod'],
+            ['method', 'validateEdition'],
             ['oldUrl', 'uniqueUrl']
         ];
     }
@@ -428,6 +429,24 @@ class Redirect extends Element
     {
         if ($this->enabled && $this->$attribute == RedirectMethods::PageNotFound) {
             $this->addError($attribute, 'Cannot enable a 404 Redirect. Update Redirect method.');
+        }
+    }
+
+    /**
+     * Add validation for Sprout Redirects editions
+     *
+     * @param $attribute
+     */
+    public function validateEdition($attribute)
+    {
+        $sproutRedirectsLite = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_LITE);
+
+        if ($sproutRedirectsLite && $this->method != RedirectMethods::PageNotFound) {
+            $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
+
+            if ($count >= 3){
+                $this->addError($attribute, 'Please upgrade to PRO to save more than 3 redirects');
+            }
         }
     }
 
