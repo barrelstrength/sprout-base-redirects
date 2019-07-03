@@ -11,6 +11,7 @@ use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutredirects\SproutRedirects;
+use barrelstrength\sproutseo\SproutSeo;
 use craft\base\ElementAction;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
@@ -67,8 +68,13 @@ class ChangePermanentMethod extends ElementAction
     {
         $elementIds = $query->ids();
 
-        $sproutRedirectsLite = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_LITE);
-        if ($sproutRedirectsLite){
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
+
+        /** @var SproutSeo $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if (!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) {
             $total = count($elementIds);
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
             if ($count >= 3 || $total + $count > 3){
