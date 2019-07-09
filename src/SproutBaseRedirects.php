@@ -37,7 +37,7 @@ class SproutBaseRedirects extends Module
     /**
      * Enable use of SproutBaseRedirects::$app-> in place of Craft::$app->
      *
-     * @var \barrelstrength\sproutbaseredirects\services\App
+     * @var App
      */
     public static $app;
 
