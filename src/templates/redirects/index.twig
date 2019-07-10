@@ -9,7 +9,7 @@
 
 {% block actionButton %}
     <div class="buttons">
-        <a class="btn submit add icon" id="sprout-base-redirects-new-button"
+        <a class="btn submit add icon {% if not isPro %}sprout-disabled{% endif %}" id="sprout-base-redirects-new-button"
            href="{{ url(pluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
 
         {% if not isPro %}
@@ -30,6 +30,11 @@
 {% endcss %}
 
 {% js %}
+    {% if not isPro %}
+        $('#sprout-base-redirects-new-button').click(function(e){
+        e.preventDefault();
+        })
+    {% endif %}
     $(document).ready(function() {
     new RedirectIndex();
     });

@@ -67,20 +67,11 @@ class ChangeTemporaryMethod extends ElementAction
     public function performAction(ElementQueryInterface $query): bool
     {
         $elementIds = $query->ids();
+        $total = count($elementIds);
 
-        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
-
-        /** @var SproutSeo $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
-        if (!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) {
-            $total = count($elementIds);
-            $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
-            if ($count >= 3 || $total + $count > 3){
-                $this->setMessage(Craft::t('sprout-base-redirects', 'Please upgrade to PRO to save more than 3 redirects'));
-                return false;
-            }
+        if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)){
+            $this->setMessage(Craft::t('sprout-base-redirects', 'Please upgrade to PRO to save more than 3 redirects'));
+            return false;
         }
 
         // Call updateMethods service

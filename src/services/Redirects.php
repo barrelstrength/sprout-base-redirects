@@ -7,11 +7,14 @@
 
 namespace barrelstrength\sproutbaseredirects\services;
 
+use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
+use barrelstrength\sproutredirects\SproutRedirects;
+use barrelstrength\sproutseo\SproutSeo;
 use Craft;
 use craft\events\ExceptionEvent;
 use craft\helpers\Json;
@@ -360,5 +363,26 @@ class Redirects extends Component
             ->count();
 
         return $count;
+    }
+
+    /**
+     * @param int $plusTotal
+     * @return bool
+     */
+    public function canCreateRedirects($plusTotal = 0)
+    {
+        /** @var SproutSeo $sproutSeoPlugin */
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
+
+        if (!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) {
+            $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
+            if ($count >= 3 || $plusTotal + $count > 3){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

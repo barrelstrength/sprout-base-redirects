@@ -59,16 +59,10 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
         }
 
-        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
-
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
-
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
             'pluginHandle' => $pluginHandle,
-            'isPro' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
+            'isPro' => SproutBaseRedirects::$app->redirects->canCreateRedirects()
         ]);
     }
 
