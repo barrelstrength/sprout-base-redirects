@@ -56,7 +56,7 @@ class RedirectsController extends Controller
         $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
 
         if (!$currentSite) {
-            throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Something went wrong'));
+            throw new ForbiddenHttpException('Something went wrong');
         }
 
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
@@ -91,7 +91,7 @@ class RedirectsController extends Controller
         $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
 
         if (!$currentSite) {
-            throw new ForbiddenHttpException(Craft::t('sprout-base-redirects', 'Unable to identify current site.'));
+            throw new ForbiddenHttpException('Unable to identify current site.');
         }
 
         $methodOptions = SproutBaseRedirects::$app->redirects->getMethods();
@@ -103,9 +103,7 @@ class RedirectsController extends Controller
                 $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $currentSite->id);
 
                 if (!$redirect) {
-                    throw new NotFoundHttpException(Craft::t('sprout-base-redirects', 'Unable to find a Redirect with the given id: {id}', [
-                        'id' => $redirectId
-                    ]));
+                    throw new NotFoundHttpException('Unable to find a Redirect with the given ID '.$redirectId);
                 }
 
                 if (!$redirect) {
@@ -177,9 +175,7 @@ class RedirectsController extends Controller
             $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $siteId);
 
             if (!$redirect) {
-                throw new Exception(Craft::t('sprout-base-redirects', 'No redirect exists with the ID “{id}”', [
-                    'id' => $redirectId
-                ]));
+                throw new Exception('No redirect exists with the ID :'.$redirectId);
             }
 
             if (!$redirect) {
