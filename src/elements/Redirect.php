@@ -436,11 +436,9 @@ class Redirect extends Element
     {
         $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
-        /** @var SproutSeo $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
 
-        if ((!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) && (int)$this->method !== RedirectMethods::PageNotFound) {
+        if ((!$sproutSeoIsPro && !$sproutRedirectsIsPro) && (int)$this->method !== RedirectMethods::PageNotFound) {
 
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
 

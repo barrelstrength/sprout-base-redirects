@@ -371,12 +371,10 @@ class Redirects extends Component
      */
     public function canCreateRedirects($plusTotal = 0)
     {
-        /** @var SproutSeo $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
         $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
-        if (!$sproutSeoPluginIsInstalled && !$sproutRedirectsIsPro) {
+        if (!$sproutSeoIsPro && !$sproutRedirectsIsPro) {
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
             if ($count >= 3 || $plusTotal + $count > 3){
                 return false;

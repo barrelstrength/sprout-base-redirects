@@ -8,6 +8,8 @@
 namespace barrelstrength\sproutbaseredirects\services;
 
 use barrelstrength\sproutbase\SproutBase;
+use barrelstrength\sproutredirects\SproutRedirects;
+use barrelstrength\sproutseo\SproutSeo;
 use craft\base\Model;
 use craft\db\Query;
 use yii\base\Component;
@@ -61,5 +63,24 @@ class Settings extends Component
         $result = SproutBase::$app->settings->saveBaseSettings($settingsArray,RedirectsSettings::class);
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSproutSeoPro()
+    {
+        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
+        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+
+        if ($sproutSeoPluginIsInstalled){
+            $sproutSeoIsPro = SproutBase::$app->settings->isEdition('sprout-seo', SproutSeo::EDITION_PRO);
+
+            if ($sproutSeoIsPro){
+                return true;
+            }
+        }
+
+        return false;
     }
 }

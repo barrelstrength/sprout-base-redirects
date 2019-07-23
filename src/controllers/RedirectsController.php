@@ -142,9 +142,7 @@ class RedirectsController extends Controller
 
         $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
-        /** @var Plugin $sproutSeoPlugin */
-        $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
-        $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
+        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
 
         return $this->renderTemplate('sprout-base-redirects/redirects/_edit', [
             'currentSite' => $currentSite,
@@ -154,7 +152,7 @@ class RedirectsController extends Controller
             'tabs' => $tabs,
             'continueEditingUrl' => $continueEditingUrl,
             'saveAsNewUrl' => $saveAsNewUrl,
-            'isPro' => $sproutSeoPluginIsInstalled || $sproutRedirectsIsPro
+            'isPro' => $sproutSeoIsPro || $sproutRedirectsIsPro
         ]);
     }
 
