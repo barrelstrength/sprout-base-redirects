@@ -10,6 +10,7 @@ namespace barrelstrength\sproutbaseredirects\elements;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangePermanentMethod;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangeTemporaryMethod;
+use barrelstrength\sproutbaseredirects\elements\actions\HardDelete;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
@@ -268,7 +269,7 @@ class Redirect extends Element
 
         // Delete
         $actions[] = Craft::$app->getElements()->createAction([
-            'type' => Delete::class,
+            'type' => HardDelete::class,
             'confirmationMessage' => Craft::t('sprout-base-redirects', 'Are you sure you want to delete the selected redirects?'),
             'successMessage' => Craft::t('sprout-base-redirects', 'Redirects deleted.'),
         ]);

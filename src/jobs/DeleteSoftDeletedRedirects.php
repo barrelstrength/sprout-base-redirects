@@ -19,14 +19,16 @@ use Throwable;
 use yii\queue\Queue;
 
 /**
- * Delete404 job
+ * DeleteSoftDeletedRedirects job
+ *
+ * @deprecated - One time use for migration
+ *
+ * This job is probably only necessary for the m190806_000000_delete_soft_deleted_redirect_elements
+ * for sprout-base-redirects v1.1.0 and we can probably just remove it in the next release or for the next
+ * major release.
  */
-class Delete404 extends BaseJob
+class DeleteSoftDeletedRedirects extends BaseJob
 {
-    public $siteId;
-    public $totalToDelete;
-    public $redirectIdToExclude;
-
     /**
      * Returns the default description for this job.
      *
@@ -34,7 +36,7 @@ class Delete404 extends BaseJob
      */
     protected function defaultDescription(): string
     {
-        return Craft::t('sprout-base-redirects', 'Deleting oldest 404 redirects');
+        return Craft::t('sprout-base-redirects', 'Deleting soft deleted Redirect Elements');
     }
 
     /**
@@ -45,23 +47,14 @@ class Delete404 extends BaseJob
      */
     public function execute($queue): bool
     {
-        $query = (new Query())
-            ->select(['redirects.id'])
+        // Get all Soft Deleted Redirects. We are removing support for Soft Deletes.
+        $redirects = (new Query())
+            ->select(['redirects.id AS redirectId', 'elements_sites.siteId AS siteId'])
             ->from(['{{%sproutseo_redirects}} redirects'])
-            ->where(['method' => RedirectMethods::PageNotFound, 'elements_sites.siteId' => $this->siteId])
             ->innerJoin('{{%elements}} elements', '[[redirects.id]] = [[elements.id]]')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]]');
-
-        if ($this->redirectIdToExclude) {
-            $query->andWhere('redirects.id != :redirectId', [':redirectId' => $this->redirectIdToExclude]);
-        }
-
-        $query->andWhere(['elements.dateDeleted' => null]);
-
-        $query->limit = $this->totalToDelete;
-        $query->orderBy = ['redirects.dateUpdated' => SORT_ASC];
-
-        $redirects = $query->all();
+            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]]')
+            ->where(['not', ['elements.dateDeleted' => null]])
+            ->all();
 
         $totalSteps = count($redirects);
 
@@ -69,10 +62,14 @@ class Delete404 extends BaseJob
             $step = $key + 1;
             $this->setProgress($queue, $step / $totalSteps);
 
-            $element = Craft::$app->elements->getElementById($redirect['id'], Redirect::class, $this->siteId);
+            $element = Craft::$app->elements->getElementById($redirect['redirectId'], Redirect::class, $redirect['siteId'], [
+                'trashed' => true
+            ]);
 
             if ($element && !Craft::$app->elements->deleteElement($element, true)) {
-                SproutBaseRedirects::error('Unable to delete the 404 Redirect using ID:'.$redirect['id']);
+                SproutBaseRedirects::error('Unable to delete the Soft Deleted Redirect Element ID:'.$redirect['redirectId']);
+            } else {
+                SproutBaseRedirects::error('Deleted the Soft Deleted Redirect Element ID:'.$redirect['redirectId']);
             }
         }
 

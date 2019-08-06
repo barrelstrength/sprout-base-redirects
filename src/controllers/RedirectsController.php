@@ -232,12 +232,21 @@ class RedirectsController extends Controller
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
         $redirectId = Craft::$app->getRequest()->getRequiredBodyParam('redirectId');
+        $siteId = Craft::$app->getRequest()->getRequiredBodyParam('siteId');
 
-        if (Craft::$app->elements->deleteElementById($redirectId)) {
+        $element = Craft::$app->elements->getElementById($redirectId, Redirect::class, $siteId);
+
+        if ($element && Craft::$app->elements->deleteElement($element, true)) {
             Craft::$app->getSession()->setNotice(Craft::t('sprout-base-redirects', 'Redirect deleted.'));
-            $this->redirectToPostedUrl();
-        } else {
-            Craft::$app->getSession()->setError(Craft::t('sprout-base-redirects', 'Couldn’t delete redirect.'));
+            return $this->redirectToPostedUrl();
         }
+
+        Craft::$app->getSession()->setError(Craft::t('sprout-base-redirects', 'Couldn’t delete redirect.'));
+
+        Craft::$app->getUrlManager()->setRouteParams([
+            'redirect' => $element
+        ]);
+
+        return null;
     }
 }

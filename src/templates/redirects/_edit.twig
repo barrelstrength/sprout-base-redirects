@@ -33,7 +33,8 @@
                         <hr>
                         <ul>
                             <li>
-                                <a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ cpUrl(currentPluginHandle ~ '/redirects/' ~ currentSite.handle)|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a>
+                                {% set redirectAfterDelete = cpUrl(currentPluginHandle ~ '/redirects/' ~ currentSite.handle) %}
+                                <a class="formsubmit error" data-action="sprout-base-redirects/redirects/delete-redirect" data-confirm="{{ 'Are you sure you want to delete this redirect?'|t('sprout-base-redirects') }}" data-redirect="{{ redirectAfterDelete|hash }}">{{ "Delete"|t('sprout-base-redirects') }}</a>
                             </li>
                         </ul>
                     {% endif %}
