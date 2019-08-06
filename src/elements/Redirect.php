@@ -442,8 +442,8 @@ class Redirect extends Element
 
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
 
-            if ($count >= 3){
-                $this->addError($attribute, 'Please upgrade to PRO to save more than 3 redirects');
+            if ($count >= 3) {
+                $this->addError($attribute, 'Upgrade to PRO to manage additional redirect rules');
             }
         }
     }

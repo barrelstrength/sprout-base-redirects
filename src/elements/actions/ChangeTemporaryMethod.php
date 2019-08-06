@@ -15,10 +15,9 @@ use barrelstrength\sproutseo\SproutSeo;
 use craft\base\ElementAction;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
+use yii\db\Exception;
 
 /**
- * @todo - refactor and clean up
- *
  * @property string $triggerLabel
  */
 class ChangeTemporaryMethod extends ElementAction
@@ -62,15 +61,15 @@ class ChangeTemporaryMethod extends ElementAction
      * @param ElementQueryInterface $query
      *
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
     public function performAction(ElementQueryInterface $query): bool
     {
         $elementIds = $query->ids();
         $total = count($elementIds);
 
-        if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)){
-            $this->setMessage(Craft::t('sprout-base-redirects', 'Please upgrade to PRO to save more than 3 redirects'));
+        if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)) {
+            $this->setMessage(Craft::t('sprout-base-redirects', 'Upgrade to PRO to manage additional redirect rules'));
             return false;
         }
 

@@ -69,8 +69,8 @@ class ChangePermanentMethod extends ElementAction
         $elementIds = $query->ids();
         $total = count($elementIds);
 
-        if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)){
-            $this->setMessage(Craft::t('sprout-base-redirects', 'Please upgrade to PRO to save more than 3 redirects'));
+        if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)) {
+            $this->setMessage(Craft::t('sprout-base-redirects', 'Upgrade to PRO to manage additional redirect rules'));
             return false;
         }
 
