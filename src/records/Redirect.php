@@ -15,13 +15,13 @@ use craft\records\Element;
 /**
  * SproutBaseRedirects - Redirect record
  *
- * @property int                          $id
- * @property string                       $oldUrl
- * @property string                       $newUrl
- * @property int                          $method
- * @property bool                         $regex
- * @property \yii\db\ActiveQueryInterface $element
- * @property int                          $count
+ * @property int                  $id
+ * @property string               $oldUrl
+ * @property string               $newUrl
+ * @property int                  $method
+ * @property bool                 $regex
+ * @property ActiveQueryInterface $element
+ * @property int                  $count
  */
 class Redirect extends ActiveRecord
 {

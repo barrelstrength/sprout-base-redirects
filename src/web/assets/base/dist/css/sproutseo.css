@@ -111,41 +111,6 @@ ul.sproutseo-metalevel-list li {
     margin-bottom: 2px;
 }
 
-.sproutseo-metalevel-number {
-    display: inline-block;
-    margin-right: 2px;
-
-    border-radius: 50%;
-    color: #8f98a3;
-    background-color: #ebedef;
-    font-weight: bold;
-
-    font-size: 10px;
-}
-
-.sproutseo-metalevel-number:before,
-.sproutseo-metalevel-number:after {
-    content: '\200B';
-    display: inline-block;
-    line-height: 0;
-
-    padding-top: 20%;
-    padding-bottom: 20%;
-}
-
-.sproutseo-metalevel-number:before {
-    padding-left: 6px;
-}
-
-.sproutseo-metalevel-number:after {
-    padding-right: 6px;
-}
-
-.sproutseo-metalevel-number.active {
-    background-color: #00b007;
-    color: #ffffff;
-}
-
 /* Sections & Sitemap
 ------------------------------------------------------------ */
 .btn .disabled {

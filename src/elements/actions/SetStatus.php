@@ -15,6 +15,10 @@ use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\validators\StatusValidator;
 
 use Craft;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use yii\db\Exception;
 
 /**
  *
@@ -32,10 +36,12 @@ class SetStatus extends ElementAction
     /**
      * @inheritdoc
      *
-     * @throws \Twig_Error_Loader
-     * @throws \yii\base\Exception
+     * @return string
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function getTriggerHtml()
+    public function getTriggerHtml(): string
     {
         return Craft::$app->view->renderTemplate('sprout-base-redirects/_components/elementactions/setstatus');
     }
@@ -56,7 +62,7 @@ class SetStatus extends ElementAction
      * @param Redirect|ElementQueryInterface $query
      *
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
     public function performAction(ElementQueryInterface $query): bool
     {

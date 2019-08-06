@@ -24,10 +24,10 @@
             <div class="menu">
                 <ul>
                     <li><a class="formsubmit"
-                           data-redirect="{{ continueEditingUrl|hash }}">{{ "Save and continue editing"|t('sprout-base-redirects') }}
+                            data-redirect="{{ continueEditingUrl|hash }}">{{ "Save and continue editing"|t('sprout-base-redirects') }}
                             <span class="shortcut">⌘S</span></a></li>
                     <li><a class="formsubmit"
-                           data-redirect="{{ saveAsNewUrl|hash }}">{{ "Save and add another"|t('sprout-base-redirects') }}</a>
+                            data-redirect="{{ saveAsNewUrl|hash }}">{{ "Save and add another"|t('sprout-base-redirects') }}</a>
                     </li>
                     {% if redirect.id is not null %}
                         <hr>
@@ -52,19 +52,19 @@
 {% block content %}
 
     <input type="hidden" name="action"
-           value="sprout-base-redirects/redirects/save-redirect">
+        value="sprout-base-redirects/redirects/save-redirect">
     <input type="hidden" name="redirectId" value="{{ redirect.id }}">
     {% set redirectUrl = currentPluginHandle ~ '/redirects' %}
     <input type="hidden" name="redirect"
-           value="{{ redirectUrl|hash }}">
+        value="{{ redirectUrl|hash }}">
 
     {% if redirect.id %}
         <input type="hidden" name="redirectId"
-               value="{{ redirect.id }}">
+            value="{{ redirect.id }}">
     {% endif %}
 
     <input type="hidden" name="siteId"
-           value="{{ currentSite.id }}">
+        value="{{ currentSite.id }}">
 
     {% include "sprout-base-redirects/redirects/_fields" %}
 

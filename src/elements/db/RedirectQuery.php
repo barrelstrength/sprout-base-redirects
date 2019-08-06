@@ -8,14 +8,10 @@
 namespace barrelstrength\sproutbaseredirects\elements\db;
 
 
-use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use barrelstrength\sproutredirects\SproutRedirects;
-use craft\base\Plugin;
 use craft\db\Connection;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
-use Craft;
 
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 

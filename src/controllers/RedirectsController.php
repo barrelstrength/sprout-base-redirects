@@ -12,10 +12,11 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutredirects\SproutRedirects;
-use craft\base\Plugin;
+use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Craft;
+use Throwable;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\base\Exception;
@@ -42,7 +43,7 @@ class RedirectsController extends Controller
      *
      * @return Response
      * @throws ForbiddenHttpException
-     * @throws \craft\errors\SiteNotFoundException
+     * @throws SiteNotFoundException
      */
     public function actionRedirectsIndexTemplate(string $pluginHandle, $siteHandle = null): Response
     {
@@ -77,7 +78,7 @@ class RedirectsController extends Controller
      * @return Response
      * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
-     * @throws \craft\errors\SiteNotFoundException
+     * @throws SiteNotFoundException
      */
     public function actionEditRedirectTemplate(string $pluginHandle, $redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
     {
@@ -159,7 +160,7 @@ class RedirectsController extends Controller
      *
      * @throws BadRequestHttpException
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function actionSaveRedirect()
     {
@@ -223,7 +224,7 @@ class RedirectsController extends Controller
      * Deletes a Redirect
      *
      * @throws BadRequestHttpException
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function actionDeleteRedirect()
     {

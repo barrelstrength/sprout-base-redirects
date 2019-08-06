@@ -8,24 +8,24 @@
 namespace barrelstrength\sproutbaseredirects\services;
 
 use barrelstrength\sproutbase\SproutBase;
-use barrelstrength\sproutredirects\SproutRedirects;
 use barrelstrength\sproutseo\SproutSeo;
 use craft\base\Model;
-use craft\db\Query;
 use yii\base\Component;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettings;
 
 use Craft;
+use yii\db\Exception;
 
 /**
  *
- * @property null|\craft\base\Model $pluginSettings
- * @property int                    $descriptionLength
+ * @property null|Model $pluginSettings
+ * @property Model      $redirectsSettings
+ * @property int        $descriptionLength
  */
 class Settings extends Component
 {
     /**
-     * @return \craft\base\Model|null
+     * @return Model|null
      */
     public function getPluginSettings()
     {
@@ -55,28 +55,27 @@ class Settings extends Component
 
     /**
      * @param array $settingsArray
+     *
      * @return int
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
-    public function saveRedirectsSettings(array $settingsArray)
+    public function saveRedirectsSettings(array $settingsArray): int
     {
-        $result = SproutBase::$app->settings->saveBaseSettings($settingsArray,RedirectsSettings::class);
-
-        return $result;
+        return SproutBase::$app->settings->saveBaseSettings($settingsArray, RedirectsSettings::class);
     }
 
     /**
      * @return bool
      */
-    public function isSproutSeoPro()
+    public function isSproutSeoPro(): bool
     {
         $sproutSeoPlugin = Craft::$app->getPlugins()->getPlugin('sprout-seo');
         $sproutSeoPluginIsInstalled = $sproutSeoPlugin->isInstalled ?? false;
 
-        if ($sproutSeoPluginIsInstalled){
+        if ($sproutSeoPluginIsInstalled) {
             $sproutSeoIsPro = SproutBase::$app->settings->isEdition('sprout-seo', SproutSeo::EDITION_PRO);
 
-            if ($sproutSeoIsPro){
+            if ($sproutSeoIsPro) {
                 return true;
             }
         }

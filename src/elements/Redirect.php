@@ -16,15 +16,18 @@ use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
 use barrelstrength\sproutredirects\SproutRedirects;
-use barrelstrength\sproutseo\SproutSeo;
 use Craft;
-use craft\base\Plugin;
+use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use craft\elements\actions\Delete;
 use craft\elements\actions\Edit;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
 /**
@@ -130,8 +133,8 @@ class Redirect extends Element
      * Returns the element's CP edit URL.
      *
      * @return null|string
-     * @throws \craft\errors\SiteNotFoundException
-     * @throws \yii\base\InvalidConfigException
+     * @throws SiteNotFoundException
+     * @throws InvalidConfigException
      */
     public function getCpEditUrl()
     {
@@ -315,8 +318,9 @@ class Redirect extends Element
      * Returns the HTML for an editor HUD for the given element.
      *
      * @return string
-     * @throws Exception
-     * @throws \Twig_Error_Loader
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function getEditorHtml(): string
     {
@@ -450,7 +454,7 @@ class Redirect extends Element
 
     /**
      * @return string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function getAbsoluteNewUrl(): string
     {

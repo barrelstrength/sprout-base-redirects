@@ -14,23 +14,27 @@ use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
 use barrelstrength\sproutredirects\SproutRedirects;
-use barrelstrength\sproutseo\SproutSeo;
 use Craft;
+use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
 use craft\helpers\Json;
 use craft\models\Site;
+use Throwable;
 use Twig\Error\RuntimeError as TwigRuntimeError;
 use yii\base\Component;
 use craft\helpers\UrlHelper;
+use yii\base\ExitException;
+use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 use yii\base\Exception;
 
 
 /**
  *
- * @property array                                               $methods
- * @property \barrelstrength\sproutbaseredirects\models\Settings $redirectsSettings
- * @property int                                                 $structureId
+ * @property array      $methods
+ * @property Settings   $redirectsSettings
+ * @property string|int $totalNon404Redirects
+ * @property int        $structureId
  */
 class Redirects extends Component
 {
@@ -38,10 +42,10 @@ class Redirects extends Component
      * @param $event
      *
      * @throws Exception
-     * @throws \Throwable
-     * @throws \craft\errors\SiteNotFoundException
-     * @throws \yii\base\ExitException
-     * @throws \yii\base\InvalidConfigException
+     * @throws Throwable
+     * @throws SiteNotFoundException
+     * @throws ExitException
+     * @throws InvalidConfigException
      */
     public function handleRedirectsOnException(ExceptionEvent $event)
     {
@@ -243,14 +247,14 @@ class Redirects extends Component
     /**
      * Logs a redirect when a match is found
      *
-     * @todo - escape this log data when we output it
-     *         https://stackoverflow.com/questions/13199095/escaping-variables
-     *
      * @param      $redirectId
      * @param Site $currentSite
      *
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
+     * @todo   - escape this log data when we output it
+     *         https://stackoverflow.com/questions/13199095/escaping-variables
+     *
      */
     public function logRedirect($redirectId, Site $currentSite): bool
     {
@@ -286,7 +290,7 @@ class Redirects extends Component
      *
      * @return Redirect|null
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function save404Redirect($absoluteUrl, $site)
     {
@@ -367,16 +371,17 @@ class Redirects extends Component
 
     /**
      * @param int $plusTotal
+     *
      * @return bool
      */
-    public function canCreateRedirects($plusTotal = 0)
+    public function canCreateRedirects($plusTotal = 0): bool
     {
         $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
         $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
 
         if (!$sproutSeoIsPro && !$sproutRedirectsIsPro) {
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
-            if ($count >= 3 || $plusTotal + $count > 3){
+            if ($count >= 3 || $plusTotal + $count > 3) {
                 return false;
             }
         }

@@ -13,6 +13,9 @@ use Craft;
 
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
+use craft\queue\QueueInterface;
+use Throwable;
+use yii\queue\Queue;
 
 /**
  * Delete404 job
@@ -34,10 +37,10 @@ class Delete404 extends BaseJob
     }
 
     /**
-     * @param \craft\queue\QueueInterface|\yii\queue\Queue $queue
+     * @param QueueInterface|Queue $queue
      *
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function execute($queue): bool
     {

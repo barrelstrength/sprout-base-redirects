@@ -10,7 +10,7 @@
 {% block actionButton %}
     <div class="buttons">
         <a class="btn submit add icon {% if not isPro %}sprout-disabled{% endif %}" id="sprout-base-redirects-new-button"
-           href="{{ url(pluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
+            href="{{ url(pluginHandle ~ '/redirects/new/' ~ currentSite.handle) }}">{{ "New Redirect"|t }}</a>
 
         {% if not isPro %}
             {{ sprout.upgradeToProButton({

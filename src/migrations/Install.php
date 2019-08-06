@@ -11,14 +11,17 @@ use barrelstrength\sproutbaseredirects\models\Settings;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
+use craft\errors\StructureNotFoundException;
 use craft\models\Structure;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
+use Throwable;
+use yii\base\Exception;
 
 /**
  *
- * @property \barrelstrength\sproutbaseredirects\models\Settings $sproutRedirectsSettingsModel
- * @property null|int                                            $structureId
+ * @property SproutRedirectsSettings $sproutRedirectsSettingsModel
+ * @property null|int                $structureId
  */
 class Install extends Migration
 {
@@ -35,7 +38,7 @@ class Install extends Migration
 
     /**
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function safeUp(): bool
     {
@@ -46,7 +49,7 @@ class Install extends Migration
 
     /**
      * @return bool|void
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function safeDown()
     {
@@ -57,11 +60,6 @@ class Install extends Migration
     // =========================================================================
 
     /**
-     * @throws \craft\errors\StructureNotFoundException
-     * @throws \yii\base\ErrorException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\web\ServerErrorHttpException
      */
     protected function createTables()
     {
@@ -105,11 +103,8 @@ class Install extends Migration
     }
 
     /**
-     * @throws \craft\errors\StructureNotFoundException
-     * @throws \yii\base\ErrorException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\web\ServerErrorHttpException
+     * @throws StructureNotFoundException
+     * @throws Exception
      */
     public function insertDefaultSettings()
     {
@@ -119,7 +114,7 @@ class Install extends Migration
             ->where(['model' => SproutRedirectsSettings::class])
             ->one();
 
-        if (is_null($settingsRow)){
+        if ($settingsRow === null) {
 
             $settings = new Settings();
             $settings->structureId = $this->createStructureId();
@@ -135,7 +130,7 @@ class Install extends Migration
 
     /**
      * @return int|null
-     * @throws \craft\errors\StructureNotFoundException
+     * @throws StructureNotFoundException
      */
     private function createStructureId()
     {

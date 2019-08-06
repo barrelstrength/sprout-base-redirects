@@ -7,18 +7,14 @@
 
 namespace barrelstrength\sproutbaseredirects\elements\actions;
 
-use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use barrelstrength\sproutredirects\SproutRedirects;
-use barrelstrength\sproutseo\SproutSeo;
 use craft\base\ElementAction;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
+use yii\db\Exception;
 
 /**
- * @todo - refactor and clean up
- *
  * @property string $triggerLabel
  */
 class ChangePermanentMethod extends ElementAction
@@ -62,7 +58,7 @@ class ChangePermanentMethod extends ElementAction
      * @param ElementQueryInterface $query
      *
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
     public function performAction(ElementQueryInterface $query): bool
     {
