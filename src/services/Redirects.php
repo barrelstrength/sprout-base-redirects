@@ -11,6 +11,7 @@ use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
+use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
 use barrelstrength\sproutredirects\SproutRedirects;
@@ -49,7 +50,6 @@ class Redirects extends Component
      */
     public function handleRedirectsOnException(ExceptionEvent $event)
     {
-
         $request = Craft::$app->getRequest();
 
         // Only handle front-end site requests that are not live preview
@@ -296,9 +296,6 @@ class Redirects extends Component
     {
         $redirect = new Redirect();
 
-        /** @var Settings $seoSettings */
-        $seoSettings = SproutBaseRedirects::$app->settings->getPluginSettings();
-
         $baseUrl = Craft::getAlias($site->getBaseUrl());
 
         $baseUrlMatch = mb_strpos($absoluteUrl, $baseUrl) === 0;
@@ -327,8 +324,11 @@ class Redirects extends Component
             return null;
         }
 
+        /** @var RedirectsSettingsModel $settings */
+        $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
+
         // delete new one
-        if (isset($seoSettings->total404Redirects) && $seoSettings->total404Redirects && $redirect) {
+        if (isset($redirectSettings->total404Redirects) && $redirectSettings->total404Redirects && $redirect) {
 
             $count = Redirect::find()
                 ->where('method=:method and sproutseo_redirects.id != :redirectId', [
@@ -338,8 +338,8 @@ class Redirects extends Component
                 ->anyStatus()
                 ->count();
 
-            if ($count >= $seoSettings->total404Redirects) {
-                $totalToDelete = $count - $seoSettings->total404Redirects;
+            if ($count >= $redirectSettings->total404Redirects) {
+                $totalToDelete = $count - $redirectSettings->total404Redirects;
 
                 $delete404 = new Delete404();
                 $delete404->totalToDelete = $totalToDelete <= 0 ? 1 : $totalToDelete + 1;
