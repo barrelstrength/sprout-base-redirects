@@ -338,15 +338,40 @@ class Redirects extends Component
                 ->count();
 
             if ($count >= $redirectSettings->total404Redirects) {
-                $totalToDelete = $count - $redirectSettings->total404Redirects;
+                $unadjustedTotalToDelete = $count - $redirectSettings->total404Redirects;
 
-                $delete404 = new Delete404();
-                $delete404->totalToDelete = $totalToDelete <= 0 ? 1 : $totalToDelete + 1;
-                $delete404->redirectIdToExclude = $redirect->id ?? null;
-                $delete404->siteId = $site->id;
+                // Adjust our total to delete amount taking into account the redirect that was just created
+                $totalToDelete = $unadjustedTotalToDelete <= 0 ? 1 : $unadjustedTotalToDelete + 1;
+                $batchSize = 100;
+                $batchList = [];
 
-                // Call the delete redirects job
-                Craft::$app->queue->push($delete404);
+                // How many groups of $batchSize do we need to create?
+                $totalBatches = ceil($totalToDelete / $batchSize);
+
+                // Default to totalToDelete
+                $remainingRedirectsToDelete = $totalToDelete;
+
+                for ($i = 1; $i <= $totalBatches; $i++) {
+
+                    // If the remaining redirects to delete are less than our
+                    // batch size, adjust the batch size to the remaining redirects
+                    if ($remainingRedirectsToDelete < $batchSize) {
+                        $batchSize = $remainingRedirectsToDelete;
+                    } else {
+                        // Use the standard batch size and decrement
+                        // the total redirects we need to delete
+                        $remainingRedirectsToDelete -= $batchSize;
+                    }
+
+                    // Create a job for this batch
+                    $delete404 = new Delete404();
+                    $delete404->totalToDelete = $batchSize;
+                    $delete404->redirectIdToExclude = $redirect->id ?? null;
+                    $delete404->siteId = $site->id;
+
+                    // Call the delete redirects job
+                    Craft::$app->queue->push($delete404);
+                }
             }
         }
 
