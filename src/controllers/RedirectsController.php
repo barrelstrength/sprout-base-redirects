@@ -11,7 +11,6 @@ use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\models\Settings;
-use barrelstrength\sproutredirects\SproutRedirects;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
@@ -139,9 +138,8 @@ class RedirectsController extends Controller
             ]
         ];
 
-        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
-
-        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutBaseRedirects::EDITION_PRO);
+        $sproutSeoIsPro = SproutBase::$app->settings->isEdition('sprout-seo', SproutBaseRedirects::EDITION_PRO);
 
         return $this->renderTemplate('sprout-base-redirects/redirects/_edit', [
             'currentSite' => $currentSite,

@@ -59,6 +59,13 @@ class SproutBaseRedirects extends Module
     public $sourceLanguage = 'en-US';
 
     /**
+     * This Pro Edition value will be used to test for all pro plugins:
+     * - Sprout Redirects Pro
+     * - Sprout SEO Pro
+     */
+    const EDITION_PRO = 'pro';
+
+    /**
      * @inheritdoc
      */
     public function __construct($id, $parent = null, array $config = [])

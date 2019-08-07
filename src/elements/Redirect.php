@@ -16,11 +16,9 @@ use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
-use barrelstrength\sproutredirects\SproutRedirects;
 use Craft;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
-use craft\elements\actions\Delete;
 use craft\elements\actions\Edit;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
@@ -439,9 +437,8 @@ class Redirect extends Element
      */
     public function validateEdition($attribute)
     {
-        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
-
-        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutBaseRedirects::EDITION_PRO);
+        $sproutSeoIsPro = SproutBase::$app->settings->isEdition('sprout-seo', SproutBaseRedirects::EDITION_PRO);
 
         if ((!$sproutSeoIsPro && !$sproutRedirectsIsPro) && (int)$this->method !== RedirectMethods::PageNotFound) {
 

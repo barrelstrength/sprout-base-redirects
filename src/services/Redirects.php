@@ -14,7 +14,6 @@ use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\jobs\Delete404;
-use barrelstrength\sproutredirects\SproutRedirects;
 use Craft;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
@@ -376,8 +375,8 @@ class Redirects extends Component
      */
     public function canCreateRedirects($plusTotal = 0): bool
     {
-        $sproutSeoIsPro = SproutBaseRedirects::$app->settings->isSproutSeoPro();
-        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutRedirects::EDITION_PRO);
+        $sproutRedirectsIsPro = SproutBase::$app->settings->isEdition('sprout-redirects', SproutBaseRedirects::EDITION_PRO);
+        $sproutSeoIsPro = SproutBase::$app->settings->isEdition('sprout-seo', SproutBaseRedirects::EDITION_PRO);
 
         if (!$sproutSeoIsPro && !$sproutRedirectsIsPro) {
             $count = SproutBaseRedirects::$app->redirects->getTotalNon404Redirects();
