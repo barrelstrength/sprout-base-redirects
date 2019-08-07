@@ -13,7 +13,6 @@ use craft\queue\BaseJob;
 use Craft;
 
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use craft\queue\QueueInterface;
 use Throwable;
 use yii\queue\Queue;

@@ -8,8 +8,6 @@
 namespace barrelstrength\sproutbaseredirects\services;
 
 use barrelstrength\sproutbase\SproutBase;
-use barrelstrength\sproutredirects\SproutRedirects;
-use barrelstrength\sproutseo\SproutSeo;
 use craft\base\Model;
 use yii\base\Component;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettings;
