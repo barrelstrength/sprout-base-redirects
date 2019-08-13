@@ -187,6 +187,11 @@ class Redirect extends Element
             'oldUrl' => Craft::t('sprout-base-redirects', 'Old Url'),
             'newUrl' => Craft::t('sprout-base-redirects', 'New Url'),
             'method' => Craft::t('sprout-base-redirects', 'Method'),
+            [
+                'label' => Craft::t('sprout-base-redirects', 'Count'),
+                'orderBy' => 'sproutseo_redirects.count',
+                'attribute' => 'count'
+            ],
             'elements.dateCreated' => Craft::t('sprout-base-redirects', 'Date Created'),
             'elements.dateUpdated' => Craft::t('sprout-base-redirects', 'Date Updated'),
         ];
