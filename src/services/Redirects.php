@@ -39,6 +39,13 @@ use yii\base\Exception;
 class Redirects extends Component
 {
     /**
+     * Set to false to stop additional processing of redirects during this request
+     *
+     * @var bool
+     */
+    protected $processRedirect = true;
+
+    /**
      * @param $event
      *
      * @throws Exception
@@ -52,9 +59,13 @@ class Redirects extends Component
         $request = Craft::$app->getRequest();
 
         // Only handle front-end site requests that are not live preview
-        if (!$request->getIsSiteRequest() OR $request->getIsLivePreview()) {
+        if (!$request->getIsSiteRequest() OR $request->getIsLivePreview() OR $this->processRedirect === false) {
             return;
         }
+
+        // Avoid counting redirects twice when Sprout SEO and Redirects are
+        // both installed and both call `handleRedirectsOnException` each request
+        $this->processRedirect = false;
 
         $exception = $event->exception;
 
