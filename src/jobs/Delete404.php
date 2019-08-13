@@ -24,7 +24,7 @@ use yii\queue\Queue;
 class Delete404 extends BaseJob
 {
     public $siteId;
-    public $totalToDelete;
+    public $idsToDelete;
     public $redirectIdToExclude;
 
     /**
@@ -45,34 +45,16 @@ class Delete404 extends BaseJob
      */
     public function execute($queue): bool
     {
-        $query = (new Query())
-            ->select(['redirects.id'])
-            ->from(['{{%sproutseo_redirects}} redirects'])
-            ->where(['method' => RedirectMethods::PageNotFound, 'elements_sites.siteId' => $this->siteId])
-            ->innerJoin('{{%elements}} elements', '[[redirects.id]] = [[elements.id]]')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]]');
+        $totalSteps = count($this->idsToDelete);
 
-        if ($this->redirectIdToExclude) {
-            $query->andWhere('redirects.id != :redirectId', [':redirectId' => $this->redirectIdToExclude]);
-        }
-
-        $query->andWhere(['elements.dateDeleted' => null]);
-
-        $query->limit = $this->totalToDelete;
-        $query->orderBy = ['redirects.dateUpdated' => SORT_ASC];
-
-        $redirects = $query->all();
-
-        $totalSteps = count($redirects);
-
-        foreach ($redirects as $key => $redirect) {
+        foreach ($this->idsToDelete as $key => $id) {
             $step = $key + 1;
             $this->setProgress($queue, $step / $totalSteps);
 
-            $element = Craft::$app->elements->getElementById($redirect['id'], Redirect::class, $this->siteId);
+            $element = Craft::$app->elements->getElementById($id, Redirect::class, $this->siteId);
 
             if ($element && !Craft::$app->elements->deleteElement($element, true)) {
-                SproutBaseRedirects::error('Unable to delete the 404 Redirect using ID:'.$redirect['id']);
+                SproutBaseRedirects::error('Unable to delete the 404 Redirect using ID:'.$id);
             }
         }
 

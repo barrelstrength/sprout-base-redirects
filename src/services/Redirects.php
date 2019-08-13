@@ -323,57 +323,7 @@ class Redirects extends Component
             return null;
         }
 
-        /** @var RedirectsSettingsModel $settings */
-        $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
-
-        // delete new one
-        if (isset($redirectSettings->total404Redirects) && $redirectSettings->total404Redirects && $redirect) {
-
-            $count = Redirect::find()
-                ->where('method=:method and sproutseo_redirects.id != :redirectId', [
-                    ':method' => RedirectMethods::PageNotFound,
-                    ':redirectId' => $redirect->id
-                ])
-                ->anyStatus()
-                ->count();
-
-            if ($count >= $redirectSettings->total404Redirects) {
-                $unadjustedTotalToDelete = $count - $redirectSettings->total404Redirects;
-
-                // Adjust our total to delete amount taking into account the redirect that was just created
-                $totalToDelete = $unadjustedTotalToDelete <= 0 ? 1 : $unadjustedTotalToDelete + 1;
-                $batchSize = 100;
-                $batchList = [];
-
-                // How many groups of $batchSize do we need to create?
-                $totalBatches = ceil($totalToDelete / $batchSize);
-
-                // Default to totalToDelete
-                $remainingRedirectsToDelete = $totalToDelete;
-
-                for ($i = 1; $i <= $totalBatches; $i++) {
-
-                    // If the remaining redirects to delete are less than our
-                    // batch size, adjust the batch size to the remaining redirects
-                    if ($remainingRedirectsToDelete < $batchSize) {
-                        $batchSize = $remainingRedirectsToDelete;
-                    } else {
-                        // Use the standard batch size and decrement
-                        // the total redirects we need to delete
-                        $remainingRedirectsToDelete -= $batchSize;
-                    }
-
-                    // Create a job for this batch
-                    $delete404 = new Delete404();
-                    $delete404->totalToDelete = $batchSize;
-                    $delete404->redirectIdToExclude = $redirect->id ?? null;
-                    $delete404->siteId = $site->id;
-
-                    // Call the delete redirects job
-                    Craft::$app->queue->push($delete404);
-                }
-            }
-        }
+        $this->purge404s([$redirect->id], $site->id);
 
         return $redirect;
     }
@@ -411,5 +361,78 @@ class Redirects extends Component
         }
 
         return true;
+    }
+
+    /**
+     * @param array $excludedIds
+     * @param null  $siteId
+     */
+    public function purge404s($excludedIds = [], $siteId = null)
+    {
+        /** @var RedirectsSettingsModel $redirectSettings */
+        $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
+
+        /// Loop through all Sites if we don't have a specific site to target
+        if ($siteId === null) {
+            $siteIds = Craft::$app->getSites()->getAllSiteIds();
+        } else {
+            $siteIds = [$siteId];
+        }
+
+        foreach ($siteIds as $currentSiteId) {
+
+            $query = Redirect::find()
+                ->where(['method' => RedirectMethods::PageNotFound])
+                ->andWhere(['siteId' => $currentSiteId]);
+
+            // Don't delete these Redirects
+            if (!empty($excludedIds)) {
+                $query->andWhere(['not in', 'sproutseo_redirects.id', $excludedIds]);
+            }
+
+            // orderBy works as string but doesn't recognize second DESC setting as array
+            $query->orderBy('sproutseo_redirects.count DESC, sproutseo_redirects.dateUpdated DESC')
+                ->anyStatus();
+
+            $ids = $query->ids();
+
+            $limitAdjustment = empty($excludedIds) ? 0 : 1;
+            $idsToDelete = array_slice($ids, $redirectSettings->total404Redirects - $limitAdjustment);
+
+            if (!empty($idsToDelete)) {
+
+                $batchSize = 25;
+
+                // Leave second argument blank and bust loop with break statement. Really. It's in the docs.
+                // https://www.php.net/manual/en/control-structures.for.php
+                for ($i = 0; ; $i++) {
+
+                    // Get me a list of the IDs to delete for this iteration. If less
+                    // than the batchSize, that specific number will be returned
+                    $loopedIdsToDelete = array_slice($idsToDelete, ($i * $batchSize) + 1, $batchSize);
+
+                    // Adjust final batch so we don't add 1
+                    if (count($loopedIdsToDelete) < $batchSize) {
+                        $loopedIdsToDelete = array_slice($idsToDelete, $i * $batchSize, $batchSize);
+                    }
+
+                    // End the for loop once we don't find any more ids in our current offset
+                    if (empty($loopedIdsToDelete)) {
+                        break;
+                    }
+
+                    // Create a job for this batch
+                    $delete404 = new Delete404();
+                    $delete404->idsToDelete = $loopedIdsToDelete;
+                    $delete404->redirectIdToExclude = $excludedIds ?? null;
+                    $delete404->siteId = $currentSiteId;
+
+                    // Call the delete redirects job, give it some delay so we don't demand
+                    // all the server resources. This is most important if anybody changes the
+                    // Redirect Limit setting in a massive way
+                    Craft::$app->getQueue()->delay(($i - 1) * 20)->push($delete404);
+                }
+            }
+        }
     }
 }
