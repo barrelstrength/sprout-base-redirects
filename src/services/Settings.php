@@ -55,10 +55,10 @@ class Settings extends Component
     /**
      * @param array $settingsArray
      *
-     * @return int
+     * @return mixed
      * @throws Exception
      */
-    public function saveRedirectsSettings(array $settingsArray): int
+    public function saveRedirectsSettings(array $settingsArray)
     {
         return SproutBase::$app->settings->saveBaseSettings($settingsArray, RedirectsSettings::class);
     }
