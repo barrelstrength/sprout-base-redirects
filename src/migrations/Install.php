@@ -47,15 +47,6 @@ class Install extends Migration
         return true;
     }
 
-    /**
-     * @return bool|void
-     * @throws Throwable
-     */
-    public function safeDown()
-    {
-        $this->dropTable('{{%sproutseo_redirects}}');
-    }
-
     // Protected Methods
     // =========================================================================
 
