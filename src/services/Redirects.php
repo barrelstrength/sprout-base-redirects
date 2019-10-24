@@ -13,7 +13,6 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use barrelstrength\sproutbaseredirects\jobs\Delete404;
 use Craft;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
@@ -433,15 +432,13 @@ class Redirects extends Component
                     }
 
                     // Create a job for this batch
-                    $delete404 = new Delete404();
-                    $delete404->idsToDelete = $loopedIdsToDelete;
-                    $delete404->redirectIdToExclude = $excludedIds ?? null;
-                    $delete404->siteId = $currentSiteId;
-
+                    $excludedIds = $excludedIds ?? null;
                     // Call the delete redirects job, give it some delay so we don't demand
                     // all the server resources. This is most important if anybody changes the
                     // Redirect Limit setting in a massive way
-                    Craft::$app->getQueue()->delay(($i - 1) * 20)->push($delete404);
+                    $delay = ($i - 1) * 20;
+
+                    SproutBase::$app->utilities->purgeElements(Redirect::class, $loopedIdsToDelete, $delay, $currentSiteId, $excludedIds);
                 }
             }
         }
