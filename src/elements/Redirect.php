@@ -22,6 +22,7 @@ use craft\helpers\UrlHelper;
 use craft\elements\actions\Edit;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
+use DateTime;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -60,6 +61,26 @@ class Redirect extends Element
      * @var int
      */
     public $count = 0;
+
+    /**
+     * @var string
+     */
+    public $lastRemoteIpAddress;
+
+    /**
+     * @var string
+     */
+    public $lastReferrer;
+
+    /**
+     * @var string
+     */
+    public $lastUserAgent;
+
+    /**
+     * @var DateTime
+     */
+    public $dateLastUsed;
 
     public function init()
     {
@@ -172,10 +193,26 @@ class Redirect extends Element
             'newUrl' => Craft::t('sprout-base-redirects', 'New Url'),
             'method' => Craft::t('sprout-base-redirects', 'Method'),
             'count' => Craft::t('sprout-base-redirects', 'Count'),
-            'test' => Craft::t('sprout-base-redirects', 'Test')
+            'dateLastUsed' => Craft::t('sprout-base-redirects', 'Date Last Used'),
+            'test' => Craft::t('sprout-base-redirects', 'Test'),
+            'lastRemoteIpAddress' => Craft::t('sprout-base-redirects', 'Last Remote IP'),
+            'lastReferrer' => Craft::t('sprout-base-redirects', 'Last Referrer'),
+            'lastUserAgent' => Craft::t('sprout-base-redirects', 'Last User Agent')
         ];
 
         return $attributes;
+    }
+
+    protected static function defineDefaultTableAttributes(string $source): array
+    {
+        $tableAttributes[] = 'oldUrl';
+        $tableAttributes[] = 'newUrl';
+        $tableAttributes[] = 'method';
+        $tableAttributes[] = 'count';
+        $tableAttributes[] = 'dateLastUsed';
+        $tableAttributes[] = 'test';
+
+        return $tableAttributes;
     }
 
     /**
@@ -192,6 +229,7 @@ class Redirect extends Element
                 'orderBy' => 'sproutseo_redirects.count',
                 'attribute' => 'count'
             ],
+            'dateLastUsed' => Craft::t('sprout-base-redirects', 'Date Last Used'),
             'elements.dateCreated' => Craft::t('sprout-base-redirects', 'Date Created'),
             'elements.dateUpdated' => Craft::t('sprout-base-redirects', 'Date Updated'),
         ];
@@ -399,6 +437,10 @@ class Redirect extends Element
         $record->method = $this->method;
         $record->regex = $this->regex;
         $record->count = $this->count;
+        $record->lastRemoteIpAddress = $this->lastRemoteIpAddress;
+        $record->lastReferrer = $this->lastReferrer;
+        $record->lastUserAgent = $this->lastUserAgent;
+        $record->dateLastUsed = $this->dateLastUsed;
 
         $record->save(false);
 

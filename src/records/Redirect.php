@@ -9,6 +9,7 @@ namespace barrelstrength\sproutbaseredirects\records;
 
 
 use craft\db\ActiveRecord;
+use DateTime;
 use yii\db\ActiveQueryInterface;
 use craft\records\Element;
 
@@ -22,6 +23,11 @@ use craft\records\Element;
  * @property bool                 $regex
  * @property ActiveQueryInterface $element
  * @property int                  $count
+ * @property string               $lastRemoteIpAddress
+ * @property string               $lastReferrer
+ * @property string               $lastUserAgent
+ * @property DateTime             $dateLastUsed
+ *
  */
 class Redirect extends ActiveRecord
 {

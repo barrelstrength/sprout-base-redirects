@@ -321,27 +321,27 @@ class Redirects extends Component
      *
      * @return bool
      * @throws Throwable
-     * @todo   - escape this log data when we output it
-     *         https://stackoverflow.com/questions/13199095/escaping-variables
      *
      */
     public function logRedirect($redirectId, Site $currentSite): bool
     {
         $log = [];
 
+        $request = Craft::$app->getRequest();
+
         try {
-            $log['redirectId'] = $redirectId;
-            $log['referralURL'] = Craft::$app->request->getReferrer();
-            $log['ipAddress'] = $_SERVER['REMOTE_ADDR'];
-            $log['dateCreated'] = date('Y-m-d h:m:s');
-
-            SproutBaseRedirects::warning('404 - Page Not Found: '.Json::encode($log));
-
             /**
              * @var Redirect $redirect
              */
             $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $currentSite->id);
             ++$redirect->count;
+
+            $redirect->lastRemoteIpAddress = $request->getRemoteIp();
+            $redirect->lastReferrer = $request->getReferrer();
+            $redirect->lastUserAgent = $request->getUserAgent();
+            $redirect->dateLastUsed = Db::prepareDateForDb(new DateTime());
+
+            SproutBaseRedirects::warning('404 - Page Not Found: '.Json::encode($redirect->getAttributes()));
 
             Craft::$app->elements->saveElement($redirect);
         } catch (\Exception $e) {
