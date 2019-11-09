@@ -14,10 +14,14 @@ use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
+use craft\db\Query;
+use craft\errors\DeprecationException;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
+use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\models\Site;
+use DateTime;
 use Throwable;
 use Twig\Error\RuntimeError as TwigRuntimeError;
 use yii\base\Component;
@@ -113,48 +117,104 @@ class Redirects extends Component
      * Find a regex url using the preg_match php function and replace
      * capture groups if any using the preg_replace php function also check normal urls
      *
-     * Example: $absoluteUrl
-     *   https://website.com
-     *   https://website.com/es
-     *   https://es.website.com
-     *
-     * @param      $absoluteUrl
-     * @param Site $site
+     * @param $absoluteUrl
+     * @param $site
      *
      * @return Redirect|null
+     * @throws DeprecationException
      */
-    public function findUrl($absoluteUrl, $site)
+    public function findUrl($absoluteUrl, Site $site)
     {
         $absoluteUrl = urldecode($absoluteUrl);
         $baseSiteUrl = Craft::getAlias($site->getBaseUrl());
 
-        $redirects = Redirect::find()
-            ->siteId($site->id)
+        $allRedirects = (new Query())
+            ->select([
+                'redirects.id',
+                'redirects.oldUrl',
+                'redirects.newUrl',
+                'redirects.method',
+                'redirects.regex',
+                'redirects.count',
+                'elements.enabled'
+            ])
+            ->from('sproutseo_redirects as redirects')
+            ->leftJoin('elements', '[[redirects.id]] = [[elements.id]]')
+            ->leftJoin('elements_sites', '[[redirects.id]] = [[elements_sites.elementId]]')
+            ->leftJoin('structureelements', '[[redirects.id]] = [[structureelements.elementId]]')
+            ->orderBy('[[structureelements.lft]] asc')
+            ->where([
+                '[[elements_sites.siteId]]' => $site->id,
+                '[[structureelements.level]]' => 1
+            ])
             ->all();
 
-        if (!$redirects) {
+        if (!$allRedirects) {
             return null;
         }
+
+        $redirects = [];
+        $pageNotFoundRedirects = [];
+
+        foreach ($allRedirects as $redirect) {
+            if ($redirect['method'] === 404) {
+                $pageNotFoundRedirects[] = $redirect;
+            } else {
+                $redirects[] = $redirect;
+            }
+        }
+
+        // Group all 404 Redirects at the end of the array
+        $orderedRedirects = array_merge($redirects, $pageNotFoundRedirects);
 
         /**
          * @var Redirect $redirect
          */
-        foreach ($redirects as $redirect) {
-            if ($redirect->regex) {
+        foreach ($orderedRedirects as $redirect) {
+            if ($redirect['regex']) {
                 // Use backticks as delimiters as they are invalid characters for URLs
-                $oldUrlPattern = '`'.$redirect->oldUrl.'`';
+                $oldUrlPattern = '`'.$redirect['oldUrl'].'`';
 
+                // Remove the base URL so we just have the relative path for the redirect
                 $currentPath = preg_replace('`^'.$baseSiteUrl.'`', '', $absoluteUrl);
 
                 if (preg_match($oldUrlPattern, $currentPath)) {
+
+                    // Make sure URLs that redirect to another domain end in a slash
+                    if (UrlHelper::isAbsoluteUrl($redirect['newUrl'])) {
+                        $newUrl = parse_url($redirect['newUrl']);
+
+                        // If path is set, we know that the base domain has a slash before the path
+                        if (isset($newUrl['path'])) {
+                            $newUrlPattern = $redirect['newUrl'];
+                        } else if (strpos($newUrl['host'], '$') === false) {
+                            $newUrlPattern = $redirect['newUrl'].'/';
+                        } else {
+
+                            // If the hostname has a $ it probably uses a a capture group
+                            // and is going to generate an invalid new URL when using it
+                            // as at this point it doesn't appear to have a path
+                            $invalidNewUrlMessage = 'The New URL value "'.$redirect['newUrl'].'" in Redirect ID '.$redirect['id'].' needs to be updated. The host name ('.$newUrl['host'].') of an absolute URL cannot contain capture groups and must end with a slash.';
+                            Craft::error('sprout-base-redirects', $invalidNewUrlMessage);
+                            Craft::$app->getDeprecator()->log('Target New URL is invalid.', $invalidNewUrlMessage);
+
+                            // End the request, to avoid potential Open Redirect security issue
+                            return null;
+                        }
+                    } else {
+                        // We have a relative path
+                        $newUrlPattern = $redirect['newUrl'];
+                    }
+
                     // Replace capture groups if any
-                    $redirect->newUrl = preg_replace($oldUrlPattern, $redirect->newUrl, $currentPath);
-                    return $redirect;
+                    $redirect['newUrl'] = preg_replace($oldUrlPattern, $newUrlPattern, $currentPath);
+
+                    return new Redirect($redirect);
                 }
-            } else if ($baseSiteUrl.$redirect->oldUrl === $absoluteUrl) {
+            } else if ($baseSiteUrl.$redirect['oldUrl'] === $absoluteUrl) {
                 // Update null value to return home page
-                $redirect->newUrl = $redirect->newUrl ?? '/';
-                return $redirect;
+                $redirect['newUrl'] = $redirect['newUrl'] ?? '/';
+                return new Redirect($redirect);
             }
         }
 

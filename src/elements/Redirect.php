@@ -419,7 +419,8 @@ class Redirect extends Element
             [['oldUrl'], 'required'],
             ['method', 'validateMethod'],
             ['method', 'validateEdition'],
-            ['oldUrl', 'uniqueUrl']
+            ['oldUrl', 'uniqueUrl'],
+            ['newUrl', 'hasTrailingSlashIfAbsolute']
         ];
     }
 
@@ -482,7 +483,34 @@ class Redirect extends Element
             ->one();
 
         if ($redirect && $redirect->id != $this->id) {
-            $this->addError($attribute, 'This url already exists.');
+            $this->addError($attribute, Craft::t('sprout-base-redirects', 'This url already exists.'));
         }
+    }
+
+    /**
+     * @param $attribute
+     */
+    public function hasTrailingSlashIfAbsolute($attribute) {
+
+        if (!UrlHelper::isAbsoluteUrl($this->{$attribute})) {
+            return;
+        }
+
+        $newUrl = parse_url($this->{$attribute});
+
+        if (isset($newUrl['host']) && strpos($newUrl['host'], '$') !== false) {
+            $this->addError($attribute, Craft::t('sprout-base-redirects', 'The host name ({host}) of an absolute URL cannot contain capture groups.', [
+                'host' => $newUrl['host'] ?? null
+            ]));
+        }
+
+        // I don't believe we'll hit this condition but just in case
+        if (!isset($newUrl['path']) || (isset($newUrl['path']) && strpos($newUrl['path'], '/') !== 0)) {
+            $this->addError($attribute, Craft::t('sprout-base-redirects', 'The host name  
+            ({host}) of an absolute URL must end with a slash.', [
+                'host' => $newUrl['host'] ?? null
+            ]));
+        }
+
     }
 }
