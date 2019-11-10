@@ -14,6 +14,18 @@
 
 <div id="settings-total-404redirects"
     class="{% if not settings.enable404RedirectLog %} hidden {% endif %}">
+
+    {{ forms.selectField({
+        label: "Redirect Match Strategy"|t('sprout-base-redirects'),
+        name: 'redirectMatchStrategy',
+        instructions: "How to match 404 requests with Redirect records already captured in the database. Defaults to matching the entire URL including query strings. Selecting 'without query strings' will remove all parameters from the request URL before searching for a match."|t('sprout-base-redirects'),
+        options: [
+            { value: 'urlWithQueryStrings', label: 'URL (with query strings)' },
+            { value: 'urlWithoutQueryStrings', label: 'URL (without query strings)' },
+        ],
+        value: settings.redirectMatchStrategy
+    }) }}
+
     {{ forms.textField({
         label: "404 Redirect Limit"|t('sprout-base-redirects'),
         instructions: "The total number of 404 Redirects that will be stored in the database per-site. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),

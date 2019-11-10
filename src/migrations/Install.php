@@ -67,7 +67,7 @@ class Install extends Migration
                 'oldUrl' => $this->string()->notNull(),
                 'newUrl' => $this->string(),
                 'method' => $this->integer(),
-                'regex' => $this->boolean()->defaultValue(false),
+                'matchStrategy' => $this->string()->defaultValue('exactMatch'),
                 'count' => $this->integer()->defaultValue(0),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),

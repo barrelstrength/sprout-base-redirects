@@ -32,13 +32,13 @@
     required: true
 }) }}
 
-{{ forms.lightswitchField({
-    label: "Evaluate regular expressions"|t('sprout-base-redirects'),
-    instructions: "Enable this setting to indicate that a regular expression is used in a redirect."|t('sprout-base-redirects'),
-    id: 'regex',
-    name: 'regex',
-    class: 'sproutseo',
-    on: redirect.regex,
-    onLabel: "On"|t('sprout-base-redirects'),
-    offLabel: "Off"|t('sprout-base-redirects')
+{{ forms.selectField({
+    label: "Match Strategy"|t('sprout-base-redirects'),
+    instructions: "The method used when checking if a 404 matches a Redirect's Old URL path. Select 'Regular Expression' for advanced pattern matching. "|t('sprout-base-redirects'),
+    name: 'matchStrategy',
+    options: [
+        { value: 'exactMatch', label: 'Exact Match' },
+        { value: 'regExMatch', label: 'Regular Expression' },
+    ],
+    value: redirect.matchStrategy
 }) }}

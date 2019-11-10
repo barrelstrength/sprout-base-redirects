@@ -40,6 +40,12 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $total404Redirects = 250;
 
+
+    /**
+     * @var string
+     */
+    public $redirectMatchStrategy = 'urlWithoutQueryStrings';
+
     public function getSettingsNavItems(): array
     {
         return [

@@ -55,7 +55,7 @@ class Redirect extends Element
     /**
      * @var bool
      */
-    public $regex = false;
+    public $matchStrategy = 'exactMatch';
 
     /**
      * @var int
@@ -320,7 +320,7 @@ class Redirect extends Element
 
     public static function defineSearchableAttributes(): array
     {
-        return ['oldUrl', 'newUrl', 'method', 'regex'];
+        return ['oldUrl', 'newUrl', 'method', 'matchStrategy'];
     }
 
     /**
@@ -337,7 +337,7 @@ class Redirect extends Element
 
             case 'test':
                 // no link for regex
-                if ($this->regex) {
+                if ($this->matchStrategy === 'regExMatch') {
                     return ' - ';
                 }
                 // Send link for testing
@@ -396,7 +396,7 @@ class Redirect extends Element
      */
     public function beforeValidate(): bool
     {
-        if ($this->oldUrl && !$this->regex) {
+        if ($this->oldUrl && !$this->matchStrategy) {
             $this->oldUrl = SproutBaseRedirects::$app->redirects->removeSlash($this->oldUrl);
         }
 
@@ -435,7 +435,7 @@ class Redirect extends Element
         $record->oldUrl = $this->oldUrl;
         $record->newUrl = $this->newUrl;
         $record->method = $this->method;
-        $record->regex = $this->regex;
+        $record->matchStrategy = $this->matchStrategy;
         $record->count = $this->count;
         $record->lastRemoteIpAddress = $this->lastRemoteIpAddress;
         $record->lastReferrer = $this->lastReferrer;

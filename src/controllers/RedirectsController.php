@@ -194,11 +194,7 @@ class RedirectsController extends Controller
         $redirect->oldUrl = $oldUrl;
         $redirect->newUrl = $newUrl;
         $redirect->method = Craft::$app->getRequest()->getRequiredBodyParam('method');
-        $redirect->regex = Craft::$app->getRequest()->getBodyParam('regex');
-
-        if (!$redirect->regex) {
-            $redirect->regex = 0;
-        }
+        $redirect->matchStrategy = Craft::$app->getRequest()->getBodyParam('matchStrategy', 'exactMatch');
 
         $redirect->enabled = Craft::$app->getRequest()->getBodyParam('enabled');
 

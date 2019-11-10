@@ -83,14 +83,21 @@ class Redirects extends Component
          */
         if ($exception instanceof HttpException && $exception->statusCode === 404) {
 
+            /** @var Settings $settings */
+            $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
+
             $currentSite = Craft::$app->getSites()->getCurrentSite();
-            $path = $request->getPathInfo();
-            $absoluteUrl = UrlHelper::url($path);
+
+            if ($settings->redirectMatchStrategy === 'urlWithoutQueryStrings') {
+                $path = $request->getPathInfo();
+                $absoluteUrl = UrlHelper::url($path);
+            } else {
+                $absoluteUrl = $request->getAbsoluteUrl();
+            }
+
 
             // Check if the requested URL needs to be redirected
-            $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
-
-            $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
+            $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite, $settings->redirectMatchStrategy);
 
             if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
                 // Save new 404 Redirect
@@ -123,7 +130,7 @@ class Redirects extends Component
      * @return Redirect|null
      * @throws DeprecationException
      */
-    public function findUrl($absoluteUrl, Site $site)
+    public function findUrl($absoluteUrl, Site $site, $redirectMatchStrategy = 'urlWithQueryStrings')
     {
         $absoluteUrl = urldecode($absoluteUrl);
         $baseSiteUrl = Craft::getAlias($site->getBaseUrl());
@@ -134,7 +141,7 @@ class Redirects extends Component
                 'redirects.oldUrl',
                 'redirects.newUrl',
                 'redirects.method',
-                'redirects.regex',
+                'redirects.matchStrategy',
                 'redirects.count',
                 'elements.enabled'
             ])
@@ -171,7 +178,8 @@ class Redirects extends Component
          * @var Redirect $redirect
          */
         foreach ($orderedRedirects as $redirect) {
-            if ($redirect['regex']) {
+
+            if ($redirect['matchStrategy'] === 'regExMatch') {
                 // Use backticks as delimiters as they are invalid characters for URLs
                 $oldUrlPattern = '`'.$redirect['oldUrl'].'`';
 
@@ -181,7 +189,7 @@ class Redirects extends Component
                 if (preg_match($oldUrlPattern, $currentPath)) {
 
                     // Make sure URLs that redirect to another domain end in a slash
-                    if (UrlHelper::isAbsoluteUrl($redirect['newUrl'])) {
+                    if ($redirect['newUrl'] !== null && UrlHelper::isAbsoluteUrl($redirect['newUrl'])) {
                         $newUrl = parse_url($redirect['newUrl']);
 
                         // If path is set, we know that the base domain has a slash before the path
@@ -214,6 +222,7 @@ class Redirects extends Component
             } else if ($baseSiteUrl.$redirect['oldUrl'] === $absoluteUrl) {
                 // Update null value to return home page
                 $redirect['newUrl'] = $redirect['newUrl'] ?? '/';
+
                 return new Redirect($redirect);
             }
         }
@@ -383,7 +392,7 @@ class Redirects extends Component
         $redirect->oldUrl = $uri;
         $redirect->newUrl = '/';
         $redirect->method = RedirectMethods::PageNotFound;
-        $redirect->regex = 0;
+        $redirect->matchStrategy = 0;
         $redirect->enabled = 0;
         $redirect->count = 0;
         $redirect->siteId = $site->id;

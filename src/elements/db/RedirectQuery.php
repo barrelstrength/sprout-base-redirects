@@ -40,7 +40,7 @@ class RedirectQuery extends ElementQuery
 
     public $method;
 
-    public $regex;
+    public $matchStrategy;
 
     public $count;
 
@@ -89,7 +89,7 @@ class RedirectQuery extends ElementQuery
             'sproutseo_redirects.oldUrl',
             'sproutseo_redirects.newUrl',
             'sproutseo_redirects.method',
-            'sproutseo_redirects.regex',
+            'sproutseo_redirects.matchStrategy',
             'sproutseo_redirects.count',
             'sproutseo_redirects.dateLastUsed',
             'sproutseo_redirects.lastRemoteIpAddress',

@@ -20,7 +20,7 @@ use craft\records\Element;
  * @property string               $oldUrl
  * @property string               $newUrl
  * @property int                  $method
- * @property bool                 $regex
+ * @property bool                 $matchStrategy
  * @property ActiveQueryInterface $element
  * @property int                  $count
  * @property string               $lastRemoteIpAddress
