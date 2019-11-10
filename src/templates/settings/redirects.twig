@@ -48,11 +48,28 @@
 
     {{ forms.textField({
         label: "404 Redirect Limit"|t('sprout-base-redirects'),
-        instructions: "The total number of 404 Redirects that will be stored in the database per-site. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),
+        instructions: "The target number of 404 Redirects that will be stored in the database per-site, after the cleanup task runs. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),
         name: 'total404Redirects',
         size:'10',
         value: settings.total404Redirects,
         errors: settings.getErrors('total404Redirects')
+    }) }}
+
+    {{ forms.selectField({
+        label: "Cleanup Probability"|t('sprout-base-redirects'),
+        id: 'cleanup-probability',
+        name: 'cleanupProbability',
+        instructions: "The probability that the 404 Redirect cleanup task will run each web request. A lower probability will trigger a cleanup task less often and the number of 404 Redirects stored in the database may be higher than the 404 Redirect Limit target until the cleanup task is triggered."|t('sprout-base-redirects'),
+        options: [
+            { value: '0', label: 'None' },
+            { value: '100000', label: '1 in 10'},
+            { value: '10000', label: '1 in 100' },
+            { value: '1000', label: '1 in 1,000' },
+            { value: '100', label: '1 in 10,000' },
+            { value: '10', label: '1 in 100,000' },
+            { value: '1', label: '1 in 1,000,000' }
+        ],
+        value: settings.cleanupProbability
     }) }}
 
     {{ forms.textareaField({

@@ -492,11 +492,19 @@ class Redirects extends Component
     /**
      * @param array $excludedIds
      * @param null  $siteId
+     * @param bool  $force
      */
-    public function purge404s($excludedIds = [], $siteId = null)
+    public function purge404s($excludedIds = [], $siteId = null, $force = false)
     {
         /** @var RedirectsSettingsModel $redirectSettings */
         $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
+        $probability = (int) $redirectSettings->cleanupProbability;
+
+        // See Craft Garbage collection treatment of probability
+        // https://docs.craftcms.com/v3/gc.html
+        if (!$force && mt_rand(0, 1000000) >= $probability) {
+            return;
+        }
 
         /// Loop through all Sites if we don't have a specific site to target
         if ($siteId === null) {

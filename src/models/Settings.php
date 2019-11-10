@@ -51,7 +51,7 @@ class Settings extends Model implements SharedPermissionsInterface
     public $redirectMatchStrategy = 'urlWithoutQueryStrings';
 
     /**
-     * @var string 
+     * @var string
      */
     public $queryStringStrategy = 'removeQueryStrings';
 
@@ -59,6 +59,11 @@ class Settings extends Model implements SharedPermissionsInterface
      * @var string
      */
     public $excludedUrlPatterns;
+
+    /**
+     * @var int
+     */
+    public $cleanupProbability = 1000;
 
     public function getSettingsNavItems(): array
     {
