@@ -46,6 +46,10 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $redirectMatchStrategy = 'urlWithoutQueryStrings';
 
+    /**
+     * @var string 
+     */
+    public $queryStringStrategy = 'removeQueryStrings';
 
     /**
      * @var string

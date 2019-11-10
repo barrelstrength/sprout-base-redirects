@@ -110,12 +110,21 @@ class Redirects extends Component
             if ($redirect) {
 
                 SproutBaseRedirects::$app->redirects->logRedirect($redirect->id, $currentSite);
+                if ($settings->queryStringStrategy === 'removeQueryStrings') {
+                    $queryString = '';
+                } else {
+                    $queryString = '?'.$request->getQueryStringWithoutPath();
+                }
 
                 if ($redirect->enabled && (int)$redirect->method !== 404) {
                     if (UrlHelper::isAbsoluteUrl($redirect->newUrl)) {
-                        Craft::$app->getResponse()->redirect($redirect->newUrl, $redirect->method);
+                        Craft::$app->getResponse()->redirect(
+                            $redirect->newUrl.$queryString, $redirect->method
+                        );
                     } else {
-                        Craft::$app->getResponse()->redirect($redirect->getAbsoluteNewUrl(), $redirect->method);
+                        Craft::$app->getResponse()->redirect(
+                            $redirect->getAbsoluteNewUrl().$queryString, $redirect->method
+                        );
                     }
                     Craft::$app->end();
                 }

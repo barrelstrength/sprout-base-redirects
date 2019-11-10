@@ -26,6 +26,17 @@
         value: settings.redirectMatchStrategy
     }) }}
 
+    {{ forms.selectField({
+        label: "Query String Strategy"|t('sprout-base-redirects'),
+        name: 'queryStringStrategy',
+        instructions: "How to treat query strings after processing a redirect. If you choose to match without query strings all parameters will be removed from the request URL before searching for a match."|t('sprout-base-redirects'),
+        options: [
+            { value: 'removeQueryStrings', label: 'Remove query strings' },
+            { value: 'appendQueryStrings', label: 'Append query strings' },
+        ],
+        value: settings.queryStringStrategy
+    }) }}
+
     {{ forms.textField({
         label: "404 Redirect Limit"|t('sprout-base-redirects'),
         instructions: "The total number of 404 Redirects that will be stored in the database per-site. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),
