@@ -544,7 +544,8 @@ class Redirect extends Element
     /**
      * @param $attribute
      */
-    public function hasTrailingSlashIfAbsolute($attribute) {
+    public function hasTrailingSlashIfAbsolute($attribute)
+    {
 
         if (!UrlHelper::isAbsoluteUrl($this->{$attribute})) {
             return;
@@ -565,6 +566,5 @@ class Redirect extends Element
                 'host' => $newUrl['host'] ?? null
             ]));
         }
-
     }
 }

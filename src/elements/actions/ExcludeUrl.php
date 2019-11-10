@@ -10,11 +10,10 @@ namespace barrelstrength\sproutbaseredirects\elements\actions;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use craft\base\ElementAction;
 use Craft;
 use craft\elements\db\ElementQueryInterface;
-use yii\db\Exception;
+use Throwable;
 
 /**
  * @property string $triggerLabel
@@ -60,9 +59,8 @@ class ExcludeUrl extends ElementAction
      * @param ElementQueryInterface $query
      *
      * @return bool
-     * @throws Exception
      * @throws \Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function performAction(ElementQueryInterface $query): bool
     {
@@ -75,11 +73,11 @@ class ExcludeUrl extends ElementAction
         $transaction = Craft::$app->db->beginTransaction();
 
         try {
-            foreach($redirects as $redirect) {
+            foreach ($redirects as $redirect) {
                 $oldUrl = $redirect->oldUrl;
 
                 // Append the selected Old URL to the Excluded URL Pattern settings array
-                $redirectSettings->excludedUrlPatterns .= PHP_EOL  . $oldUrl;
+                $redirectSettings->excludedUrlPatterns .= PHP_EOL.$oldUrl;
 
                 Craft::$app->elements->deleteElement($redirect, true);
             }
@@ -89,7 +87,7 @@ class ExcludeUrl extends ElementAction
             $transaction->commit();
 
             Craft::info('Form Saved.', __METHOD__);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Craft::error('Unable to save form: '.$e->getMessage(), __METHOD__);
             $transaction->rollBack();
         }

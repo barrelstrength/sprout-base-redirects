@@ -20,7 +20,6 @@ use craft\errors\ElementNotFoundException;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
 use craft\helpers\Db;
-use craft\helpers\Json;
 use craft\models\Site;
 use DateTime;
 use Throwable;
@@ -353,9 +352,7 @@ class Redirects extends Component
                 ['count' => $count],
                 ['id' => $redirect->id]
             )->execute();
-
         } catch (\Exception $e) {
-            \Craft::dd($e->getMessage());
             SproutBaseRedirects::error('Unable to increment redirect: '.$e->getMessage());
         }
 
@@ -464,12 +461,7 @@ class Redirects extends Component
 
         // Remove empty lines and comments
         $excludedUrlPatterns = array_filter($excludedUrlPatterns, static function($excludedUrlPattern) {
-            if (empty($excludedUrlPattern) ||
-                strpos($excludedUrlPattern, '#') === 0) {
-                return false;
-            }
-
-            return true;
+            return !(empty($excludedUrlPattern) || strpos($excludedUrlPattern, '#') === 0);
         });
 
         foreach ($excludedUrlPatterns as $excludedUrlPattern) {
@@ -497,10 +489,11 @@ class Redirects extends Component
     {
         /** @var RedirectsSettingsModel $redirectSettings */
         $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
-        $probability = (int) $redirectSettings->cleanupProbability;
+        $probability = (int)$redirectSettings->cleanupProbability;
 
         // See Craft Garbage collection treatment of probability
         // https://docs.craftcms.com/v3/gc.html
+        /** @noinspection RandomApiMigrationInspection */
         if (!$force && mt_rand(0, 1000000) >= $probability) {
             return;
         }
