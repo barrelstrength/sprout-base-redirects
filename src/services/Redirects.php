@@ -16,6 +16,7 @@ use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Query;
 use craft\errors\DeprecationException;
+use craft\errors\ElementNotFoundException;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
 use craft\helpers\Db;
@@ -109,7 +110,8 @@ class Redirects extends Component
 
             if ($redirect) {
 
-                SproutBaseRedirects::$app->redirects->logRedirect($redirect->id, $currentSite);
+                SproutBaseRedirects::$app->redirects->incrementCount($redirect);
+
                 if ($settings->queryStringStrategy === 'removeQueryStrings') {
                     $queryString = '';
                 } else {
@@ -335,38 +337,26 @@ class Redirects extends Component
     }
 
     /**
-     * Logs a redirect when a match is found
+     * Increments the count of a redirect when hit
      *
-     * @param      $redirectId
-     * @param Site $currentSite
+     * @param Redirect $redirect
      *
      * @return bool
      * @throws Throwable
-     *
      */
-    public function logRedirect($redirectId, Site $currentSite): bool
+    public function incrementCount(Redirect $redirect): bool
     {
-        $log = [];
-
-        $request = Craft::$app->getRequest();
-
         try {
-            /**
-             * @var Redirect $redirect
-             */
-            $redirect = Craft::$app->getElements()->getElementById($redirectId, Redirect::class, $currentSite->id);
-            ++$redirect->count;
+            $count = ++$redirect->count;
 
-            $redirect->lastRemoteIpAddress = $request->getRemoteIp();
-            $redirect->lastReferrer = $request->getReferrer();
-            $redirect->lastUserAgent = $request->getUserAgent();
-            $redirect->dateLastUsed = Db::prepareDateForDb(new DateTime());
+            Craft::$app->db->createCommand()->update('{{%sproutseo_redirects}}',
+                ['count' => $count],
+                ['id' => $redirect->id]
+            )->execute();
 
-            SproutBaseRedirects::warning('404 - Page Not Found: '.Json::encode($redirect->getAttributes()));
-
-            Craft::$app->elements->saveElement($redirect);
         } catch (\Exception $e) {
-            SproutBaseRedirects::error('Unable to log redirect: '.$e->getMessage());
+            \Craft::dd($e->getMessage());
+            SproutBaseRedirects::error('Unable to increment redirect: '.$e->getMessage());
         }
 
         return true;
