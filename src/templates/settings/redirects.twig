@@ -37,6 +37,15 @@
         value: settings.queryStringStrategy
     }) }}
 
+    {{ forms.lightswitchField({
+        label: "Track Remote IP"|t('sprout-base-redirects'),
+        instructions: "Enable to capture the IP Address used when a 404 request is saved. IP Addresses may be considered personal information."|t('sprout-base-redirects'),
+        name: 'trackRemoteIp',
+        on: settings.trackRemoteIp ? true : false,
+        onLabel: "Enable"|t('sprout-base-redirects'),
+        first: true
+    }) }}
+
     {{ forms.textField({
         label: "404 Redirect Limit"|t('sprout-base-redirects'),
         instructions: "The total number of 404 Redirects that will be stored in the database per-site. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),

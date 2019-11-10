@@ -10,8 +10,10 @@ namespace barrelstrength\sproutbaseredirects\elements;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangePermanentMethod;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangeTemporaryMethod;
+use barrelstrength\sproutbaseredirects\elements\actions\ExcludeUrl;
 use barrelstrength\sproutbaseredirects\elements\actions\HardDelete;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
@@ -427,6 +429,9 @@ class Redirect extends Element
      */
     public function afterSave(bool $isNew)
     {
+        /** @var Settings $settings */
+        $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
+
         // Get the Redirect record
         if (!$isNew) {
             $record = RedirectRecord::findOne($this->id);
@@ -444,7 +449,7 @@ class Redirect extends Element
         $record->method = $this->method;
         $record->matchStrategy = $this->matchStrategy;
         $record->count = $this->count;
-        $record->lastRemoteIpAddress = $this->lastRemoteIpAddress;
+        $record->lastRemoteIpAddress = $settings->trackRemoteIp ? $this->lastRemoteIpAddress : null;
         $record->lastReferrer = $this->lastReferrer;
         $record->lastUserAgent = $this->lastUserAgent;
         $record->dateLastUsed = $this->dateLastUsed;

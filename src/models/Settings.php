@@ -40,6 +40,10 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $total404Redirects = 250;
 
+    /**
+     * @var bool
+     */
+    public $trackRemoteIp = false;
 
     /**
      * @var string
