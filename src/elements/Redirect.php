@@ -315,6 +315,13 @@ class Redirect extends Element
             'successMessage' => Craft::t('sprout-base-redirects', 'Redirects deleted.'),
         ]);
 
+        if ($source === 'method:404') {
+            $actions[] = Craft::$app->getElements()->createAction([
+                'type' => ExcludeUrl::class,
+                'successMessage' => Craft::t('sprout-base-redirects', 'Added to Excluded URL Patterns setting.'),
+            ]);
+        }
+
         return $actions;
     }
 

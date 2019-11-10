@@ -46,6 +46,12 @@ class Settings extends Model implements SharedPermissionsInterface
      */
     public $redirectMatchStrategy = 'urlWithoutQueryStrings';
 
+
+    /**
+     * @var string
+     */
+    public $excludedUrlPatterns;
+
     public function getSettingsNavItems(): array
     {
         return [

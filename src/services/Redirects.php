@@ -95,6 +95,9 @@ class Redirects extends Component
                 $absoluteUrl = $request->getAbsoluteUrl();
             }
 
+            if ($settings->excludedUrlPatterns && $this->isExcludedUrlPattern($absoluteUrl, $settings)) {
+                return;
+            }
 
             // Check if the requested URL needs to be redirected
             $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite, $settings->redirectMatchStrategy);
@@ -440,6 +443,42 @@ class Redirects extends Component
         }
 
         return true;
+    }
+
+    /**
+     * @param                        $absoluteUrl
+     * @param RedirectsSettingsModel $settings
+     *
+     * @return bool
+     */
+    public function isExcludedUrlPattern($absoluteUrl, Settings $settings): bool
+    {
+        $excludedUrlPatterns = explode(PHP_EOL, $settings->excludedUrlPatterns);
+
+        // Remove empty lines and comments
+        $excludedUrlPatterns = array_filter($excludedUrlPatterns, static function($excludedUrlPattern) {
+            if (empty($excludedUrlPattern) ||
+                strpos($excludedUrlPattern, '#') === 0) {
+                return false;
+            }
+
+            return true;
+        });
+
+        foreach ($excludedUrlPatterns as $excludedUrlPattern) {
+            if (strpos($excludedUrlPattern, '#') === 0) {
+                continue;
+            }
+
+            // Use backticks as delimiters as they are invalid characters for URLs
+            $excludedUrlPattern = '`'.$excludedUrlPattern.'`';
+
+            if (preg_match($excludedUrlPattern, $absoluteUrl)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

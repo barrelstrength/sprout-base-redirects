@@ -34,4 +34,16 @@
         value: settings.total404Redirects,
         errors: settings.getErrors('total404Redirects')
     }) }}
+
+    {{ forms.textareaField({
+        label: "Excluded URL Patterns"|t('sprout-base-redirects'),
+        instructions: "Add any regular expression patterns you wish to exclude from the Redirect log. Add each pattern on a new line. Comments can be added by starting a line with the hash # character"|t('sprout-base-redirects'),
+        class: 'nicetext',
+        name: 'excludedUrlPatterns',
+        value: settings.excludedUrlPatterns,
+        placeholder: "# Exclude all CSS and JS files
+\\.(css|js)$"|t('sprout-base-redirects'),
+        errors: settings.getErrors('excludedUrlPatterns'),
+        rows: 4
+    }) }}
 </div>
