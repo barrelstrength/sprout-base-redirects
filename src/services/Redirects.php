@@ -105,7 +105,7 @@ class Redirects extends Component
 
             if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
                 // Save new 404 Redirect
-                $redirect = SproutBaseRedirects::$app->redirects->save404Redirect($absoluteUrl, $currentSite, $settings->trackRemoteIp);
+                $redirect = SproutBaseRedirects::$app->redirects->save404Redirect($absoluteUrl, $currentSite, $settings);
             }
 
             if ($redirect) {
@@ -365,17 +365,16 @@ class Redirects extends Component
     /**
      * Save a 404 redirect and check total404Redirects setting
      *
-     * @param      $absoluteUrl
-     * @param Site $site
-     *
-     * @param bool $trackRemoteIp
+     * @param                        $absoluteUrl
+     * @param Site                   $site
+     * @param RedirectsSettingsModel $settings
      *
      * @return Redirect|null
+     * @throws ElementNotFoundException
      * @throws Exception
      * @throws Throwable
-     * @throws ElementNotFoundException
      */
-    public function save404Redirect($absoluteUrl, $site, $trackRemoteIp = false)
+    public function save404Redirect($absoluteUrl, Site $site, Settings $settings)
     {
         $request = Craft::$app->getRequest();
 
@@ -403,7 +402,7 @@ class Redirects extends Component
         $redirect->enabled = 0;
         $redirect->count = 0;
         $redirect->siteId = $site->id;
-        $redirect->lastRemoteIpAddress = $trackRemoteIp ? $request->getRemoteIp() : null;
+        $redirect->lastRemoteIpAddress = $settings->trackRemoteIp ? $request->getRemoteIp() : null;
         $redirect->lastReferrer = $request->getReferrer();
         $redirect->lastUserAgent = $request->getUserAgent();
         $redirect->dateLastUsed = Db::prepareDateForDb(new DateTime());
