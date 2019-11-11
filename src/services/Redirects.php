@@ -7,6 +7,7 @@
 
 namespace barrelstrength\sproutbaseredirects\services;
 
+use barrelstrength\sproutbase\jobs\PurgeElements;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
@@ -554,7 +555,13 @@ class Redirects extends Component
                     // Redirect Limit setting in a massive way
                     $delay = ($i - 1) * 20;
 
-                    SproutBase::$app->utilities->purgeElements(Redirect::class, $loopedIdsToDelete, $delay, $currentSiteId, $excludedIds);
+                    $purgeElements = new PurgeElements();
+                    $purgeElements->elementType = Redirect::class;
+                    $purgeElements->siteId = $currentSiteId;
+                    $purgeElements->idsToDelete = $loopedIdsToDelete;
+                    $purgeElements->idsToExclude = $excludedIds;
+
+                    SproutBase::$app->utilities->purgeElements($purgeElements, $delay);
                 }
             }
         }
