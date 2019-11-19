@@ -29,7 +29,7 @@
     {{ forms.selectField({
         label: "Query String Strategy"|t('sprout-base-redirects'),
         name: 'queryStringStrategy',
-        instructions: "How to treat query strings after processing a redirect. If you choose to match without query strings all parameters will be removed from the request URL before searching for a match."|t('sprout-base-redirects'),
+        instructions: "How to treat query strings after processing a redirect. 'Remove query strings' will remove the query string from the incoming URL entirely. 'Append query strings' will add any query string from the incoming URL to the New Url."|t('sprout-base-redirects'),
         options: [
             { value: 'removeQueryStrings', label: 'Remove query strings' },
             { value: 'appendQueryStrings', label: 'Append query strings' },
