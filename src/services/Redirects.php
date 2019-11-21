@@ -101,7 +101,7 @@ class Redirects extends Component
             }
 
             // Check if the requested URL needs to be redirected
-            $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite, $settings->redirectMatchStrategy);
+            $redirect = SproutBaseRedirects::$app->redirects->findUrl($absoluteUrl, $currentSite);
 
             if (!$redirect && isset($settings->enable404RedirectLog) && $settings->enable404RedirectLog) {
                 // Save new 404 Redirect
@@ -144,7 +144,7 @@ class Redirects extends Component
      * @return Redirect|null
      * @throws DeprecationException
      */
-    public function findUrl($absoluteUrl, Site $site, $redirectMatchStrategy = 'urlWithQueryStrings')
+    public function findUrl($absoluteUrl, Site $site)
     {
         $absoluteUrl = urldecode($absoluteUrl);
         $baseSiteUrl = Craft::getAlias($site->getBaseUrl());
@@ -159,10 +159,10 @@ class Redirects extends Component
                 'redirects.count',
                 'elements.enabled'
             ])
-            ->from('sproutseo_redirects as redirects')
-            ->leftJoin('elements', '[[redirects.id]] = [[elements.id]]')
-            ->leftJoin('elements_sites', '[[redirects.id]] = [[elements_sites.elementId]]')
-            ->leftJoin('structureelements', '[[redirects.id]] = [[structureelements.elementId]]')
+            ->from('{{%sproutseo_redirects}} as redirects')
+            ->leftJoin('{{%elements}}', '[[redirects.id]] = [[elements.id]]')
+            ->leftJoin('{{%elements_sites}}', '[[redirects.id]] = [[elements_sites.elementId]]')
+            ->leftJoin('{{%structureelements}}', '[[redirects.id]] = [[structureelements.elementId]]')
             ->orderBy('[[structureelements.lft]] asc')
             ->where([
                 '[[elements_sites.siteId]]' => $site->id,
