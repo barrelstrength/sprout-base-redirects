@@ -160,9 +160,9 @@ class Redirects extends Component
                 'elements.enabled'
             ])
             ->from('{{%sproutseo_redirects}} as redirects')
-            ->leftJoin('{{%elements}}', '[[redirects.id]] = [[elements.id]]')
-            ->leftJoin('{{%elements_sites}}', '[[redirects.id]] = [[elements_sites.elementId]]')
-            ->leftJoin('{{%structureelements}}', '[[redirects.id]] = [[structureelements.elementId]]')
+            ->leftJoin('{{%elements}} as elements', '[[redirects.id]] = [[elements.id]]')
+            ->leftJoin('{{%elements_sites}} as elements_sites', '[[redirects.id]] = [[elements_sites.elementId]]')
+            ->leftJoin('{{%structureelements}} as structureelements', '[[redirects.id]] = [[structureelements.elementId]]')
             ->orderBy('[[structureelements.lft]] asc')
             ->where([
                 '[[elements_sites.siteId]]' => $site->id,
