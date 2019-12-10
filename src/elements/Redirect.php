@@ -260,6 +260,10 @@ class Redirect extends Element
             ]
         ];
 
+        $sources[] = [
+            'heading' => Craft::t('sprout-base-redirects', 'Methods')
+        ];
+
         $methods = SproutBaseRedirects::$app->redirects->getMethods();
 
         foreach ($methods as $code => $method) {
