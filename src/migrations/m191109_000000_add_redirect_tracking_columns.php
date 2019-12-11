@@ -32,7 +32,7 @@ class m191109_000000_add_redirect_tracking_columns extends Migration
         }
 
         if (!$this->db->columnExists($table, 'dateLastUsed')) {
-            $this->addColumn($table, 'dateLastUsed', $this->string()->after('lastUserAgent'));
+            $this->addColumn($table, 'dateLastUsed', $this->dateTime()->after('lastUserAgent'));
         }
 
         return true;
