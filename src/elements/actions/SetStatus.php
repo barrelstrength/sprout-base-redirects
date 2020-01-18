@@ -13,7 +13,6 @@ use craft\elements\db\ElementQueryInterface;
 use barrelstrength\sproutbaseredirects\enums\RedirectStatuses;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\validators\StatusValidator;
-
 use Craft;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -26,20 +25,17 @@ use yii\db\Exception;
  */
 class SetStatus extends ElementAction
 {
-    // Public Methods
-    // =========================================================================
     /**
      * @var string|null The status elements should be set to
      */
     public $status;
 
     /**
-     * @inheritdoc
-     *
      * @return string
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
+     * @throws \yii\base\Exception
      */
     public function getTriggerHtml(): string
     {
@@ -49,9 +45,10 @@ class SetStatus extends ElementAction
     /**
      * @inheritdoc
      */
-    public function rules(): array
+    public function defineRules(): array
     {
-        $rules = parent::rules();
+        $rules = parent::defineRules();
+
         $rules[] = [['status'], 'required'];
         $rules[] = [['status'], StatusValidator::class];
 

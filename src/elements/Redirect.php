@@ -477,17 +477,20 @@ class Redirect extends Element
     }
 
     /**
-     * @inheritdoc
+     * @return array
+     * @throws InvalidConfigException
      */
-    public function rules(): array
+    protected function defineRules(): array
     {
-        return [
-            [['oldUrl'], 'required'],
-            ['method', 'validateMethod'],
-            ['method', 'validateEdition'],
-            ['oldUrl', 'uniqueUrl'],
-            ['newUrl', 'hasTrailingSlashIfAbsolute']
-        ];
+        $rules = parent::defineRules();
+
+        $rules[] = [['oldUrl'], 'required'];
+        $rules[] = ['method', 'validateMethod'];
+        $rules[] = ['method', 'validateEdition'];
+        $rules[] = ['oldUrl', 'uniqueUrl'];
+        $rules[] = ['newUrl', 'hasTrailingSlashIfAbsolute'];
+
+        return $rules;
     }
 
     /**
