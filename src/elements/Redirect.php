@@ -98,7 +98,15 @@ class Redirect extends Element
      */
     public static function displayName(): string
     {
-        return Craft::t('sprout-base-redirects', 'Sprout SEO Redirects');
+        return Craft::t('sprout-base-redirects', 'Redirect');
+    }
+
+    /**
+     * @return string
+     */
+    public static function pluralDisplayName(): string
+    {
+        return Craft::t('sprout-base-redirects', 'Redirects');
     }
 
     /**
