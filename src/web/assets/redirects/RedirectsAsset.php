@@ -22,6 +22,10 @@ class RedirectsAsset extends AssetBundle
             CpAsset::class,
         ];
 
+        $this->css = [
+            'css/redirects.css'
+        ];
+
         $this->js = [
             'js/redirectindex.js'
         ];

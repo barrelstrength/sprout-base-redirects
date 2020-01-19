@@ -35,9 +35,9 @@
         e.preventDefault();
         })
     {% endif %}
-    $(document).ready(function() {
-    new RedirectIndex();
-    });
+
+
+
 {% endjs %}
 
 {% block initJs %}
@@ -54,5 +54,7 @@
     toolbarSelector: '#toolbar'
     });
 
-    $('#main-content').removeClass('has-sidebar');
+    new RedirectEditLinkSwitcher({
+    pluginHandle: criteria.pluginHandle
+    });
 {% endblock %}
