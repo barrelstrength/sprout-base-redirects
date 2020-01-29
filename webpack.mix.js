@@ -1,7 +1,6 @@
 const mix = require('laravel-mix');
 
 mix
-  // Sitemaps
   .sass(
     'src/web/assets/redirects/src/scss/redirects.scss',
     'src/web/assets/redirects/dist/css/redirects.css',
