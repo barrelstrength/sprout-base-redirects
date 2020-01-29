@@ -14,6 +14,7 @@ use barrelstrength\sproutbaseredirects\services\App;
 use craft\events\RegisterTemplateRootsEvent;
 use Craft;
 use craft\web\View;
+use yii\base\InvalidConfigException;
 use yii\base\Module;
 use craft\helpers\ArrayHelper;
 use craft\i18n\PhpMessageSource;
@@ -99,9 +100,19 @@ class SproutBaseRedirects extends Module
         parent::__construct($id, $parent, $config);
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
     public function init()
     {
-        self::$app = new App();
+        parent::init();
+
+        $this->setComponents([
+            'app' => App::class
+        ]);
+
+        self::$app = $this->get('app');
+
         Craft::setAlias('@sproutbaseredirects', $this->getBasePath());
 
         // Setup Controllers
@@ -119,7 +130,5 @@ class SproutBaseRedirects extends Module
         Event::on(View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS, function(RegisterTemplateRootsEvent $e) {
             $e->roots['sprout-base-redirects'] = $this->getBasePath().DIRECTORY_SEPARATOR.'templates';
         });
-
-        parent::init();
     }
 }
