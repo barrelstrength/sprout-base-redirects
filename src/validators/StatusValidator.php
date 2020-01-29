@@ -7,9 +7,9 @@
 
 namespace barrelstrength\sproutbaseredirects\validators;
 
-use yii\validators\Validator;
 use barrelstrength\sproutbaseredirects\enums\RedirectStatuses;
 use Craft;
+use yii\validators\Validator;
 
 class StatusValidator extends Validator
 {

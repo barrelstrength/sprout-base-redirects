@@ -9,18 +9,18 @@ namespace barrelstrength\sproutbaseredirects\controllers;
 
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use barrelstrength\sproutbaseredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
+use Craft;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use Craft;
 use Throwable;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
 use yii\base\Exception;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * Redirects controller
@@ -232,6 +232,7 @@ class RedirectsController extends Controller
 
         if ($element && Craft::$app->elements->deleteElement($element, true)) {
             Craft::$app->getSession()->setNotice(Craft::t('sprout-base-redirects', 'Redirect deleted.'));
+
             return $this->redirectToPostedUrl();
         }
 

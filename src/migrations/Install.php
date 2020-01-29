@@ -7,14 +7,14 @@
 
 namespace barrelstrength\sproutbaseredirects\migrations;
 
+use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
 use barrelstrength\sproutbaseredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
 use craft\errors\StructureNotFoundException;
 use craft\models\Structure;
-use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
-use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
 use Throwable;
 use yii\base\Exception;
 
@@ -25,16 +25,10 @@ use yii\base\Exception;
  */
 class Install extends Migration
 {
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string The database driver to use
      */
     public $driver;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @return bool
@@ -44,11 +38,35 @@ class Install extends Migration
     {
         $this->createTables();
         $this->insertDefaultSettings();
+
         return true;
     }
 
-    // Protected Methods
-    // =========================================================================
+    /**
+     * @throws StructureNotFoundException
+     * @throws Exception
+     */
+    public function insertDefaultSettings()
+    {
+        $settingsRow = (new Query())
+            ->select(['*'])
+            ->from(['{{%sprout_settings}}'])
+            ->where(['model' => SproutRedirectsSettings::class])
+            ->one();
+
+        if ($settingsRow === null) {
+
+            $settings = new Settings();
+            $settings->structureId = $this->createStructureId();
+
+            $settingsArray = [
+                'model' => SproutRedirectsSettings::class,
+                'settings' => json_encode($settings->toArray())
+            ];
+
+            $this->insert('{{%sprout_settings}}', $settingsArray);
+        }
+    }
 
     /**
      */
@@ -95,32 +113,6 @@ class Install extends Migration
             '{{%sproutseo_redirects}}', 'id',
             '{{%elements}}', 'id', 'CASCADE'
         );
-    }
-
-    /**
-     * @throws StructureNotFoundException
-     * @throws Exception
-     */
-    public function insertDefaultSettings()
-    {
-        $settingsRow = (new Query())
-            ->select(['*'])
-            ->from(['{{%sprout_settings}}'])
-            ->where(['model' => SproutRedirectsSettings::class])
-            ->one();
-
-        if ($settingsRow === null) {
-
-            $settings = new Settings();
-            $settings->structureId = $this->createStructureId();
-
-            $settingsArray = [
-                'model' => SproutRedirectsSettings::class,
-                'settings' => json_encode($settings->toArray())
-            ];
-
-            $this->insert('{{%sprout_settings}}', $settingsArray);
-        }
     }
 
     /**

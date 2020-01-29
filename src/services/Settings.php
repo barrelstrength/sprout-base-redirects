@@ -8,11 +8,10 @@
 namespace barrelstrength\sproutbaseredirects\services;
 
 use barrelstrength\sproutbase\SproutBase;
+use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettings;
+use Craft;
 use craft\base\Model;
 use yii\base\Component;
-use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettings;
-
-use Craft;
 use yii\db\Exception;
 
 /**

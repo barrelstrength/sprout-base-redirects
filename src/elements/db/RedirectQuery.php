@@ -9,11 +9,10 @@ namespace barrelstrength\sproutbaseredirects\elements\db;
 
 
 use barrelstrength\sproutbaseredirects\elements\Redirect;
+use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use craft\db\Connection;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
-
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 
 /**
  * RedirectQuery represents a SELECT SQL statement for Redirect Elements in a way that is independent of DBMS.
@@ -30,9 +29,6 @@ class RedirectQuery extends ElementQuery
      * @var string
      */
     public $pluginHandle;
-
-    // General - Properties
-    // =========================================================================
 
     public $oldUrl;
 
@@ -69,9 +65,6 @@ class RedirectQuery extends ElementQuery
 
         return $this;
     }
-
-    // Protected Methods
-    // =========================================================================
 
     /**
      * @inheritdoc

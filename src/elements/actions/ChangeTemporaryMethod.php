@@ -9,8 +9,8 @@ namespace barrelstrength\sproutbaseredirects\elements\actions;
 
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use craft\base\ElementAction;
 use Craft;
+use craft\base\ElementAction;
 use craft\elements\db\ElementQueryInterface;
 use yii\db\Exception;
 
@@ -19,9 +19,6 @@ use yii\db\Exception;
  */
 class ChangeTemporaryMethod extends ElementAction
 {
-    // Properties
-    // =========================================================================
-
     /**
      * @var string|null The confirmation message that should be shown before the elements get deleted
      */
@@ -32,9 +29,6 @@ class ChangeTemporaryMethod extends ElementAction
      */
     public $successMessage;
 
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -42,9 +36,6 @@ class ChangeTemporaryMethod extends ElementAction
     {
         return Craft::t('sprout-base-redirects', 'Update Method to 302');
     }
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -67,6 +58,7 @@ class ChangeTemporaryMethod extends ElementAction
 
         if (!SproutBaseRedirects::$app->redirects->canCreateRedirects($total)) {
             $this->setMessage(Craft::t('sprout-base-redirects', 'Upgrade to PRO to manage additional redirect rules'));
+
             return false;
         }
 

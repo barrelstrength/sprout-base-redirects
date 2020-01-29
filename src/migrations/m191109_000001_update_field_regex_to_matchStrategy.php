@@ -66,6 +66,7 @@ class m191109_000001_update_field_regex_to_matchStrategy extends Migration
     public function safeDown(): bool
     {
         echo "m191109_000001_update_field_regex_to_matchStrategy cannot be reverted.\n";
+
         return false;
     }
 }

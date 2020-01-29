@@ -27,6 +27,7 @@ class m190806_000000_delete_soft_deleted_redirect_elements extends Migration
     public function safeDown(): bool
     {
         echo "m190806_000000_delete_soft_deleted_redirect_elements cannot be reverted.\n";
+
         return false;
     }
 }

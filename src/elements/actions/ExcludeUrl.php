@@ -10,8 +10,8 @@ namespace barrelstrength\sproutbaseredirects\elements\actions;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
-use craft\base\ElementAction;
 use Craft;
+use craft\base\ElementAction;
 use craft\elements\db\ElementQueryInterface;
 use Throwable;
 
@@ -20,9 +20,6 @@ use Throwable;
  */
 class ExcludeUrl extends ElementAction
 {
-    // Properties
-    // =========================================================================
-
     /**
      * @var string|null The confirmation message that should be shown before the elements get deleted
      */
@@ -33,9 +30,6 @@ class ExcludeUrl extends ElementAction
      */
     public $successMessage;
 
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -43,9 +37,6 @@ class ExcludeUrl extends ElementAction
     {
         return Craft::t('sprout-base-redirects', 'Add to Excluded URLs');
     }
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc

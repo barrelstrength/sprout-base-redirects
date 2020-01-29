@@ -12,9 +12,6 @@ namespace barrelstrength\sproutbaseredirects\enums;
  */
 abstract class RedirectMethods
 {
-    // Constants
-    // =========================================================================
-
     const Permanent = 301;
     const Temporary = 302;
     const PageNotFound = 404;

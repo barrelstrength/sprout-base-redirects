@@ -9,8 +9,8 @@ namespace barrelstrength\sproutbaseredirects\models;
 
 
 use barrelstrength\sproutbase\base\SharedPermissionsInterface;
-use craft\base\Model;
 use Craft;
+use craft\base\Model;
 
 /**
  *

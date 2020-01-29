@@ -9,9 +9,9 @@ namespace barrelstrength\sproutbaseredirects\services;
 
 use barrelstrength\sproutbase\jobs\PurgeElements;
 use barrelstrength\sproutbase\SproutBase;
-use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
+use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
@@ -21,16 +21,16 @@ use craft\errors\ElementNotFoundException;
 use craft\errors\SiteNotFoundException;
 use craft\events\ExceptionEvent;
 use craft\helpers\Db;
+use craft\helpers\UrlHelper;
 use craft\models\Site;
 use DateTime;
 use Throwable;
 use Twig\Error\RuntimeError as TwigRuntimeError;
 use yii\base\Component;
-use craft\helpers\UrlHelper;
+use yii\base\Exception;
 use yii\base\ExitException;
 use yii\base\InvalidConfigException;
 use yii\web\HttpException;
-use yii\base\Exception;
 
 
 /**
@@ -407,6 +407,7 @@ class Redirects extends Component
 
         if (!Craft::$app->elements->saveElement($redirect)) {
             Craft::warning($redirect->getErrors(), 'sprout-base-redirects');
+
             return null;
         }
 

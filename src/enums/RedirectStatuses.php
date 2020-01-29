@@ -12,9 +12,6 @@ namespace barrelstrength\sproutbaseredirects\enums;
  */
 abstract class RedirectStatuses
 {
-    // Constants
-    // =========================================================================
-
     const ON = 'on';
     const OFF = 'off';
 }

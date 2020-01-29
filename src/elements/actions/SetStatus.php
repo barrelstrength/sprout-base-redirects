@@ -8,12 +8,12 @@
 namespace barrelstrength\sproutbaseredirects\elements\actions;
 
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use craft\base\ElementAction;
-use craft\elements\db\ElementQueryInterface;
-use barrelstrength\sproutbaseredirects\enums\RedirectStatuses;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
+use barrelstrength\sproutbaseredirects\enums\RedirectStatuses;
 use barrelstrength\sproutbaseredirects\validators\StatusValidator;
 use Craft;
+use craft\base\ElementAction;
+use craft\elements\db\ElementQueryInterface;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -85,6 +85,7 @@ class SetStatus extends ElementAction
 
             if ((int)$redirect->method === RedirectMethods::PageNotFound) {
                 $this->setMessage(Craft::t('sprout-base-redirects', 'Unable to enable a 404. Update redirect method.'));
+
                 return false;
             }
         }

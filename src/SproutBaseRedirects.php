@@ -10,15 +10,14 @@ namespace barrelstrength\sproutbaseredirects;
 use barrelstrength\sproutbase\base\BaseSproutTrait;
 use barrelstrength\sproutbaseredirects\controllers\RedirectsController;
 use barrelstrength\sproutbaseredirects\services\App;
-
-use craft\events\RegisterTemplateRootsEvent;
 use Craft;
-use craft\web\View;
-use yii\base\InvalidConfigException;
-use yii\base\Module;
+use craft\events\RegisterTemplateRootsEvent;
 use craft\helpers\ArrayHelper;
 use craft\i18n\PhpMessageSource;
+use craft\web\View;
 use yii\base\Event;
+use yii\base\InvalidConfigException;
+use yii\base\Module;
 
 /**
  *
@@ -31,9 +30,11 @@ class SproutBaseRedirects extends Module
     use BaseSproutTrait;
 
     /**
-     * @var string
+     * This Pro Edition value will be used to test for all pro plugins:
+     * - Sprout Redirects Pro
+     * - Sprout SEO Pro
      */
-    public $handle;
+    const EDITION_PRO = 'pro';
 
     /**
      * Enable use of SproutBaseRedirects::$app-> in place of Craft::$app->
@@ -50,6 +51,11 @@ class SproutBaseRedirects extends Module
     public static $pluginHandle = 'sprout-base-redirects';
 
     /**
+     * @var string
+     */
+    public $handle;
+
+    /**
      * @var string|null The translation category that this module translation messages should use. Defaults to the lowercase plugin handle.
      */
     public $t9nCategory;
@@ -58,13 +64,6 @@ class SproutBaseRedirects extends Module
      * @var string The language that the module messages were written in
      */
     public $sourceLanguage = 'en-US';
-
-    /**
-     * This Pro Edition value will be used to test for all pro plugins:
-     * - Sprout Redirects Pro
-     * - Sprout SEO Pro
-     */
-    const EDITION_PRO = 'pro';
 
     /**
      * @inheritdoc

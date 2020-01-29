@@ -9,9 +9,9 @@ namespace barrelstrength\sproutbaseredirects\records;
 
 
 use craft\db\ActiveRecord;
+use craft\records\Element;
 use DateTime;
 use yii\db\ActiveQueryInterface;
-use craft\records\Element;
 
 /**
  * SproutBaseRedirects - Redirect record

@@ -12,18 +12,18 @@ use barrelstrength\sproutbaseredirects\elements\actions\ChangePermanentMethod;
 use barrelstrength\sproutbaseredirects\elements\actions\ChangeTemporaryMethod;
 use barrelstrength\sproutbaseredirects\elements\actions\ExcludeUrl;
 use barrelstrength\sproutbaseredirects\elements\actions\HardDelete;
+use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
+use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\models\Settings;
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
-use barrelstrength\sproutbaseredirects\elements\db\RedirectQuery;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
-use barrelstrength\sproutbaseredirects\elements\actions\SetStatus;
+use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
+use craft\base\Element;
+use craft\elements\actions\Edit;
+use craft\elements\db\ElementQueryInterface;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
-use craft\elements\actions\Edit;
-use craft\base\Element;
-use craft\elements\db\ElementQueryInterface;
 use DateTime;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -84,13 +84,6 @@ class Redirect extends Element
      */
     public $dateLastUsed;
 
-    public function init()
-    {
-        $this->setScenario(Model::SCENARIO_DEFAULT);
-
-        parent::init();
-    }
-
     /**
      * Returns the element type name.
      *
@@ -128,58 +121,6 @@ class Redirect extends Element
     }
 
     /**
-     * Returns whether the current user can edit the element.
-     *
-     * @return bool
-     */
-    public function getIsEditable(): bool
-    {
-        return true;
-    }
-
-    /**
-     * Use the name as the string representation.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        if ($this->oldUrl) {
-            return (string)$this->oldUrl;
-        }
-        return (string)$this->id ?: static::class;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSupportedSites(): array
-    {
-        // limit to just the one site this element is set to so that we don't propagate when saving
-        return [$this->siteId];
-    }
-
-    /**
-     * Returns the element's CP edit URL.
-     *
-     * @return null|string
-     * @throws SiteNotFoundException
-     * @throws InvalidConfigException
-     */
-    public function getCpEditUrl()
-    {
-        $pluginHandle = Craft::$app->request->getBodyParam('criteria.pluginHandle');
-
-        $url = UrlHelper::cpUrl($pluginHandle.'/redirects/edit/'.$this->id);
-
-        if (Craft::$app->getIsMultiSite() && $this->siteId != Craft::$app->getSites()->getCurrentSite()->id) {
-            $url .= '/'.$this->getSite()->handle;
-        }
-
-        return $url;
-    }
-
-    /**
      * @inheritdoc
      *
      * @return RedirectQuery The newly created [[RedirectQuery]] instance.
@@ -211,6 +152,11 @@ class Redirect extends Element
         ];
 
         return $attributes;
+    }
+
+    public static function defineSearchableAttributes(): array
+    {
+        return ['oldUrl', 'newUrl', 'method', 'matchStrategy'];
     }
 
     protected static function defineDefaultTableAttributes(string $source): array
@@ -339,42 +285,64 @@ class Redirect extends Element
         return $actions;
     }
 
-    public static function defineSearchableAttributes(): array
+    public function init()
     {
-        return ['oldUrl', 'newUrl', 'method', 'matchStrategy'];
+        $this->setScenario(Model::SCENARIO_DEFAULT);
+
+        parent::init();
     }
 
     /**
-     * @param string $attribute
+     * Returns whether the current user can edit the element.
+     *
+     * @return bool
+     */
+    public function getIsEditable(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Use the name as the string representation.
      *
      * @return string
      */
-    protected function tableAttributeHtml(string $attribute): string
+    public function __toString()
     {
-        switch ($attribute) {
-            case 'newUrl':
-
-                return $this->newUrl ?? '/';
-
-            case 'test':
-                // no link for regex
-                if ($this->matchStrategy === 'regExMatch') {
-                    return ' - ';
-                }
-                // Send link for testing
-                $site = Craft::$app->getSites()->getSiteById($this->siteId);
-
-                if ($site === null) {
-                    return ' - ';
-                }
-
-                $baseUrl = Craft::getAlias($site->getBaseUrl());
-                $oldUrl = $baseUrl.$this->oldUrl;
-
-                return "<a href='{$oldUrl}' target='_blank' class='go'>Test</a>";
+        if ($this->oldUrl) {
+            return (string)$this->oldUrl;
         }
 
-        return parent::tableAttributeHtml($attribute);
+        return (string)$this->id ?: static::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSupportedSites(): array
+    {
+        // limit to just the one site this element is set to so that we don't propagate when saving
+        return [$this->siteId];
+    }
+
+    /**
+     * Returns the element's CP edit URL.
+     *
+     * @return null|string
+     * @throws SiteNotFoundException
+     * @throws InvalidConfigException
+     */
+    public function getCpEditUrl()
+    {
+        $pluginHandle = Craft::$app->request->getBodyParam('criteria.pluginHandle');
+
+        $url = UrlHelper::cpUrl($pluginHandle.'/redirects/edit/'.$this->id);
+
+        if (Craft::$app->getIsMultiSite() && $this->siteId != Craft::$app->getSites()->getCurrentSite()->id) {
+            $url .= '/'.$this->getSite()->handle;
+        }
+
+        return $url;
     }
 
     /**
@@ -384,6 +352,8 @@ class Redirect extends Element
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
+     * @throws \yii\base\Exception
+     * @throws \yii\base\Exception
      */
     public function getEditorHtml(): string
     {
@@ -477,23 +447,6 @@ class Redirect extends Element
     }
 
     /**
-     * @return array
-     * @throws InvalidConfigException
-     */
-    protected function defineRules(): array
-    {
-        $rules = parent::defineRules();
-
-        $rules[] = [['oldUrl'], 'required'];
-        $rules[] = ['method', 'validateMethod'];
-        $rules[] = ['method', 'validateEdition'];
-        $rules[] = ['oldUrl', 'uniqueUrl'];
-        $rules[] = ['newUrl', 'hasTrailingSlashIfAbsolute'];
-
-        return $rules;
-    }
-
-    /**
      * Add validation so a user can't save a 404 in "enabled" status
      *
      * @param $attribute
@@ -581,5 +534,57 @@ class Redirect extends Element
                 'host' => $newUrl['host'] ?? null
             ]));
         }
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function tableAttributeHtml(string $attribute): string
+    {
+        switch ($attribute) {
+            case 'newUrl':
+
+                return $this->newUrl ?? '/';
+
+            case 'test':
+                // no link for regex
+                if ($this->matchStrategy === 'regExMatch') {
+                    return ' - ';
+                }
+                // Send link for testing
+                $site = Craft::$app->getSites()->getSiteById($this->siteId);
+
+                if ($site === null) {
+                    return ' - ';
+                }
+
+                $baseUrl = Craft::getAlias($site->getBaseUrl());
+                $oldUrl = $baseUrl.$this->oldUrl;
+
+                return "<a href='{$oldUrl}' target='_blank' class='go'>Test</a>";
+        }
+
+        return parent::tableAttributeHtml($attribute);
+    }
+
+    /**
+     * @return array
+     * @throws InvalidConfigException
+     */
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+
+        $rules[] = [['oldUrl'], 'required'];
+        $rules[] = ['method', 'validateMethod'];
+        $rules[] = ['method', 'validateEdition'];
+        $rules[] = ['oldUrl', 'uniqueUrl'];
+        $rules[] = ['newUrl', 'hasTrailingSlashIfAbsolute'];
+
+        return $rules;
     }
 }
