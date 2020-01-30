@@ -326,15 +326,14 @@ class Redirect extends Element
     }
 
     /**
-     * Returns the element's CP edit URL.
-     *
-     * @return null|string
-     * @throws SiteNotFoundException
-     * @throws InvalidConfigException
+     * @return string|null
+     * @throws \craft\errors\MissingComponentException
+     * @throws \craft\errors\SiteNotFoundException
+     * @throws \yii\base\InvalidConfigException
      */
     public function getCpEditUrl()
     {
-        $pluginHandle = Craft::$app->request->getBodyParam('criteria.pluginHandle');
+        $pluginHandle = Craft::$app->getSession()->get('sprout.pluginHandle');
 
         $url = UrlHelper::cpUrl($pluginHandle.'/redirects/edit/'.$this->id);
 

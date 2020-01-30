@@ -41,20 +41,10 @@
 {% endjs %}
 
 {% block initJs %}
-    {# Pass segment to the RedirectQuery class to build URLs across plugin use cases #}
-    var criteria = $.extend({}, Craft.defaultIndexCriteria);
-    criteria.pluginHandle = '{{ craft.app.request.getSegment(1) }}';
 
-    Craft.elementIndex = Craft.createElementIndex('{{ elementType|e("js") }}', $('#page-container'), {
-    elementTypeName: '{{ elementInstance.displayName()|e("js") }}',
-    elementTypePluralName: '{{ elementInstance.pluralDisplayName()|e("js") }}',
-    context: '{{ context }}',
-    storageKey: 'elementindex.{{ elementType|e("js") }}',
-    criteria: criteria,
-    toolbarSelector: '#toolbar'
-    });
+    {{  parent() }}
 
     new RedirectEditLinkSwitcher({
-    pluginHandle: criteria.pluginHandle
+    pluginHandle: '{{ craft.app.request.getSegment(1) }}'
     });
 {% endblock %}
