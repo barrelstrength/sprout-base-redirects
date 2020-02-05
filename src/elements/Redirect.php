@@ -513,12 +513,11 @@ class Redirect extends Element
      */
     public function hasTrailingSlashIfAbsolute($attribute)
     {
-
-        if (!UrlHelper::isAbsoluteUrl($this->{$attribute})) {
+        if (!UrlHelper::isAbsoluteUrl($this->getFieldValue($attribute))) {
             return;
         }
 
-        $newUrl = parse_url($this->{$attribute});
+        $newUrl = parse_url($this->getFieldValue($attribute));
 
         if (isset($newUrl['host']) && strpos($newUrl['host'], '$') !== false) {
             $this->addError($attribute, Craft::t('sprout-base-redirects', 'The host name ({host}) of an absolute URL cannot contain capture groups.', [
