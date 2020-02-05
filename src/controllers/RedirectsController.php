@@ -37,12 +37,13 @@ class RedirectsController extends Controller
     }
 
     /**
-     * @param string      $pluginHandle
-     * @param string|null $siteHandle
+     * @param string $pluginHandle
+     * @param null   $siteHandle
      *
-     * @return Response
-     * @throws ForbiddenHttpException
-     * @throws SiteNotFoundException
+     * @return \yii\web\Response
+     * @throws \craft\errors\MissingComponentException
+     * @throws \craft\errors\SiteNotFoundException
+     * @throws \yii\web\ForbiddenHttpException
      */
     public function actionRedirectsIndexTemplate(string $pluginHandle, $siteHandle = null): Response
     {
@@ -58,6 +59,8 @@ class RedirectsController extends Controller
         if (!$currentSite) {
             throw new ForbiddenHttpException('Something went wrong');
         }
+
+        Craft::$app->getSession()->set('sprout.pluginHandle', $pluginHandle);
 
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
