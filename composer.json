@@ -1,7 +1,7 @@
 {
   "name": "barrelstrength/sprout-base-redirects",
   "description": "Common Redirects libraries for Sprout Plugins for Craft CMS",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "type": "yii-module",
   "license": "proprietary",
   "authors": [
