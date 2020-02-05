@@ -63,7 +63,7 @@ class Redirects extends Component
         $request = Craft::$app->getRequest();
 
         // Only handle front-end site requests that are not live preview
-        if (!$request->getIsSiteRequest() OR $request->getIsLivePreview() OR $this->processRedirect === false) {
+        if (!$request->getIsSiteRequest() || $request->getIsLivePreview() || $this->processRedirect === false) {
             return;
         }
 
