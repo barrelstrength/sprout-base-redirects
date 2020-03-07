@@ -60,7 +60,7 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException('Something went wrong');
         }
 
-        Craft::$app->getSession()->set('sprout.pluginHandle', $pluginHandle);
+        Craft::$app->getSession()->set('sprout.redirects.pluginHandle', $pluginHandle);
 
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,

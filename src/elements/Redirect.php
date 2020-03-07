@@ -333,7 +333,7 @@ class Redirect extends Element
      */
     public function getCpEditUrl()
     {
-        $pluginHandle = Craft::$app->getSession()->get('sprout.pluginHandle');
+        $pluginHandle = Craft::$app->getSession()->get('sprout.redirects.pluginHandle');
 
         $url = UrlHelper::cpUrl($pluginHandle.'/redirects/edit/'.$this->id);
 
