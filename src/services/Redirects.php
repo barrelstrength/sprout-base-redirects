@@ -157,7 +157,8 @@ class Redirects extends Component
                 'redirects.method',
                 'redirects.matchStrategy',
                 'redirects.count',
-                'elements.enabled'
+                'elements.enabled',
+                'elements_sites.siteId'
             ])
             ->from('{{%sproutseo_redirects}} as redirects')
             ->leftJoin('{{%elements}} as elements', '[[redirects.id]] = [[elements.id]]')
