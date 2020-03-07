@@ -178,7 +178,7 @@ class Redirects extends Component
         $pageNotFoundRedirects = [];
 
         foreach ($allRedirects as $redirect) {
-            if ($redirect['method'] === 404) {
+            if ($redirect['method'] === '404') {
                 $pageNotFoundRedirects[] = $redirect;
             } else {
                 $redirects[] = $redirect;
