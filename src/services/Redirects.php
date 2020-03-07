@@ -62,8 +62,12 @@ class Redirects extends Component
     {
         $request = Craft::$app->getRequest();
 
+        /** @var Settings $settings */
+        $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
+        $enableRedirects = $settings->enableRedirects ? true : false;
+
         // Only handle front-end site requests that are not live preview
-        if (!$request->getIsSiteRequest() || $request->getIsLivePreview() || $this->processRedirect === false) {
+        if (!$request->getIsSiteRequest() || $request->getIsLivePreview() || $this->processRedirect === false || $enableRedirects === false) {
             return;
         }
 
@@ -83,9 +87,6 @@ class Redirects extends Component
          * @var HttpException $exception
          */
         if ($exception instanceof HttpException && $exception->statusCode === 404) {
-
-            /** @var Settings $settings */
-            $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
 
             $currentSite = Craft::$app->getSites()->getCurrentSite();
 

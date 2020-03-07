@@ -33,6 +33,11 @@ class Settings extends Model implements SharedPermissionsInterface
     /**
      * @var bool
      */
+    public $enableRedirects = true;
+
+    /**
+     * @var bool
+     */
     public $enable404RedirectLog = false;
 
     /**
