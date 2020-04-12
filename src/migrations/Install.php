@@ -8,11 +8,15 @@
 namespace barrelstrength\sproutbaseredirects\migrations;
 
 use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
+use barrelstrength\sproutbase\records\Settings as SproutBaseSettingsRecord;
+use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
+use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use Craft;
 use craft\db\Migration;
 use craft\db\Query;
+use craft\db\Table;
 use craft\errors\StructureNotFoundException;
 use craft\models\Structure;
 use Throwable;
@@ -43,6 +47,28 @@ class Install extends Migration
     }
 
     /**
+     * @return bool
+     * @throws \yii\db\Exception
+     */
+    public function safeDown(): bool
+    {
+        // Delete Redirect Elements
+        Craft::$app->getDb()->createCommand()
+            ->delete(Table::ELEMENTS, ['type', Redirect::class])
+            ->execute();
+
+        // Delete Redirect Settings
+        Craft::$app->getDb()->createCommand()
+            ->delete(SproutBaseSettingsRecord::tableName(), ['model', SproutRedirectsSettings::class])
+            ->execute();
+
+        // Delete Redirect Table
+        $this->dropTableIfExists(RedirectRecord::tableName());
+
+        return true;
+    }
+
+    /**
      * @throws StructureNotFoundException
      * @throws Exception
      */
@@ -50,7 +76,7 @@ class Install extends Migration
     {
         $settingsRow = (new Query())
             ->select(['*'])
-            ->from(['{{%sprout_settings}}'])
+            ->from([SproutBaseSettingsRecord::tableName()])
             ->where(['model' => SproutRedirectsSettings::class])
             ->one();
 
@@ -64,7 +90,7 @@ class Install extends Migration
                 'settings' => json_encode($settings->toArray())
             ];
 
-            $this->insert('{{%sprout_settings}}', $settingsArray);
+            $this->insert(SproutBaseSettingsRecord::tableName(), $settingsArray);
         }
     }
 
@@ -77,10 +103,8 @@ class Install extends Migration
         $migration->safeUp();
         ob_end_clean();
 
-        $table = '{{%sproutseo_redirects}}';
-
-        if (!$this->db->tableExists($table)) {
-            $this->createTable($table, [
+        if (!$this->db->tableExists(RedirectRecord::tableName())) {
+            $this->createTable(RedirectRecord::tableName(), [
                 'id' => $this->primaryKey(),
                 'oldUrl' => $this->string()->notNull(),
                 'newUrl' => $this->string(),
@@ -103,15 +127,15 @@ class Install extends Migration
 
     protected function createIndexes()
     {
-        $this->createIndex(null, '{{%sproutseo_redirects}}', 'id');
+        $this->createIndex(null, RedirectRecord::tableName(), 'id');
     }
 
     protected function addForeignKeys()
     {
         $this->addForeignKey(
             null,
-            '{{%sproutseo_redirects}}', 'id',
-            '{{%elements}}', 'id', 'CASCADE'
+            RedirectRecord::tableName(), 'id',
+            Table::ELEMENTS, 'id', 'CASCADE'
         );
     }
 
@@ -128,4 +152,5 @@ class Install extends Migration
 
         return $structure->id;
     }
+
 }

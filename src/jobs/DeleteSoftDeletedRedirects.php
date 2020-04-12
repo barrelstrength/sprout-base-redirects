@@ -8,9 +8,11 @@
 namespace barrelstrength\sproutbaseredirects\jobs;
 
 use barrelstrength\sproutbaseredirects\elements\Redirect;
+use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Query;
+use craft\db\Table;
 use craft\queue\BaseJob;
 use craft\queue\QueueInterface;
 use Throwable;
@@ -37,10 +39,13 @@ class DeleteSoftDeletedRedirects extends BaseJob
     {
         // Get all Soft Deleted Redirects. We are removing support for Soft Deletes.
         $redirects = (new Query())
-            ->select(['redirects.id AS redirectId', 'elements_sites.siteId AS siteId'])
-            ->from(['{{%sproutseo_redirects}} redirects'])
-            ->innerJoin('{{%elements}} elements', '[[redirects.id]] = [[elements.id]]')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]]')
+            ->select([
+                'redirects.id AS redirectId',
+                'elements_sites.siteId AS siteId'
+            ])
+            ->from([RedirectRecord::tableName().' redirects'])
+            ->innerJoin(Table::ELEMENTS.' elements', '[[redirects.id]] = [[elements.id]]')
+            ->innerJoin(Table::ELEMENTS_SITES.' elements_sites', '[[elements_sites.elementId]] = [[elements.id]]')
             ->where(['not', ['elements.dateDeleted' => null]])
             ->all();
 

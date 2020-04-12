@@ -13,6 +13,7 @@ use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\enums\RedirectMethods;
 use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
+use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Query;
@@ -159,7 +160,7 @@ class Redirects extends Component
                 'elements.enabled',
                 'elements_sites.siteId'
             ])
-            ->from('{{%sproutseo_redirects}} as redirects')
+            ->from(RedirectRecord::tableName().' as redirects')
             ->leftJoin('{{%elements}} as elements', '[[redirects.id]] = [[elements.id]]')
             ->leftJoin('{{%elements_sites}} as elements_sites', '[[redirects.id]] = [[elements_sites.elementId]]')
             ->leftJoin('{{%structureelements}} as structureelements', '[[redirects.id]] = [[structureelements.elementId]]')
@@ -279,7 +280,7 @@ class Redirects extends Component
     public function updateRedirectMethod($ids, $newMethod): int
     {
         $response = Craft::$app->db->createCommand()->update(
-            '{{%sproutseo_redirects}}',
+            RedirectRecord::tableName(),
             ['method' => $newMethod],
             ['in', 'id', $ids]
         )->execute();
@@ -349,7 +350,7 @@ class Redirects extends Component
         try {
             $count = ++$redirect->count;
 
-            Craft::$app->db->createCommand()->update('{{%sproutseo_redirects}}',
+            Craft::$app->db->createCommand()->update(RedirectRecord::tableName(),
                 ['count' => $count],
                 ['id' => $redirect->id]
             )->execute();
