@@ -7,7 +7,6 @@
 
 namespace barrelstrength\sproutbaseredirects;
 
-use barrelstrength\sproutbase\base\BaseSproutTrait;
 use barrelstrength\sproutbaseredirects\controllers\RedirectsController;
 use barrelstrength\sproutbaseredirects\services\App;
 use Craft;
@@ -27,8 +26,6 @@ use yii\base\Module;
  */
 class SproutBaseRedirects extends Module
 {
-    use BaseSproutTrait;
-
     /**
      * This Pro Edition value will be used to test for all pro plugins:
      * - Sprout Redirects Pro
@@ -42,13 +39,6 @@ class SproutBaseRedirects extends Module
      * @var App
      */
     public static $app;
-
-    /**
-     * Identify our plugin for BaseSproutTrait
-     *
-     * @var string
-     */
-    public static $pluginHandle = 'sprout-base-redirects';
 
     /**
      * @var string

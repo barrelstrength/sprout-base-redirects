@@ -32,9 +32,7 @@ use yii\base\ExitException;
 use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 
-
 /**
- *
  * @property array      $methods
  * @property Settings   $redirectsSettings
  * @property string|int $totalNon404Redirects
@@ -219,7 +217,7 @@ class Redirects extends Component
                             // and is going to generate an invalid new URL when using it
                             // as at this point it doesn't appear to have a path
                             $invalidNewUrlMessage = 'The New URL value "'.$redirect['newUrl'].'" in Redirect ID '.$redirect['id'].' needs to be updated. The host name ('.$newUrl['host'].') of an absolute URL cannot contain capture groups and must end with a slash.';
-                            Craft::error('sprout-base-redirects', $invalidNewUrlMessage);
+                            Craft::error($invalidNewUrlMessage, __METHOD__);
                             Craft::$app->getDeprecator()->log('Target New URL is invalid.', $invalidNewUrlMessage);
 
                             // End the request, to avoid potential Open Redirect security issue
@@ -356,7 +354,7 @@ class Redirects extends Component
                 ['id' => $redirect->id]
             )->execute();
         } catch (\Exception $e) {
-            SproutBaseRedirects::error('Unable to increment redirect: '.$e->getMessage());
+            Craft::error('Unable to increment redirect: '.$e->getMessage(), __METHOD__);
         }
 
         return true;
@@ -408,7 +406,7 @@ class Redirects extends Component
         $redirect->dateLastUsed = Db::prepareDateForDb(new DateTime());
 
         if (!Craft::$app->elements->saveElement($redirect)) {
-            Craft::warning($redirect->getErrors(), 'sprout-base-redirects');
+            Craft::warning($redirect->getErrors(), __METHOD__);
 
             return null;
         }

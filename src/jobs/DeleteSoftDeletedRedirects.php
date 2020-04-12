@@ -55,9 +55,9 @@ class DeleteSoftDeletedRedirects extends BaseJob
             ]);
 
             if ($element && !Craft::$app->elements->deleteElement($element, true)) {
-                SproutBaseRedirects::error('Unable to delete the Soft Deleted Redirect Element ID:'.$redirect['redirectId']);
+                Craft::error('Unable to delete the Soft Deleted Redirect Element ID:'.$redirect['redirectId'], __METHOD__);
             } else {
-                SproutBaseRedirects::error('Deleted the Soft Deleted Redirect Element ID:'.$redirect['redirectId']);
+                Craft::error('Deleted the Soft Deleted Redirect Element ID:'.$redirect['redirectId'], __METHOD__);
             }
         }
 
