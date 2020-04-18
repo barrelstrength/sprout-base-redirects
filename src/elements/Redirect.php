@@ -410,7 +410,6 @@ class Redirect extends Element
      */
     public function afterSave(bool $isNew)
     {
-        /** @var Settings $settings */
         $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
 
         // Get the Redirect record

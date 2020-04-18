@@ -61,7 +61,6 @@ class Redirects extends Component
     {
         $request = Craft::$app->getRequest();
 
-        /** @var Settings $settings */
         $settings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
         $enableRedirects = $settings->enableRedirects ? true : false;
 
