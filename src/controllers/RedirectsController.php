@@ -9,9 +9,10 @@ namespace barrelstrength\sproutbaseredirects\controllers;
 
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use barrelstrength\sproutbaseredirects\models\Settings;
+use barrelstrength\sproutbaseredirects\models\Settings as SproutBaseRedirectsSettings;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
+use craft\errors\MissingComponentException;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
@@ -31,7 +32,7 @@ class RedirectsController extends Controller
 
     public function init()
     {
-        $this->permissions = SproutBase::$app->settings->getPluginPermissions(new Settings(), 'sprout-redirects');
+        $this->permissions = SproutBase::$app->settings->getPluginPermissions(new SproutBaseRedirectsSettings(), 'sprout-redirects');
 
         parent::init();
     }
@@ -40,10 +41,10 @@ class RedirectsController extends Controller
      * @param string $pluginHandle
      * @param null   $siteHandle
      *
-     * @return \yii\web\Response
-     * @throws \craft\errors\MissingComponentException
-     * @throws \craft\errors\SiteNotFoundException
-     * @throws \yii\web\ForbiddenHttpException
+     * @return Response
+     * @throws MissingComponentException
+     * @throws SiteNotFoundException
+     * @throws ForbiddenHttpException
      */
     public function actionRedirectsIndexTemplate(string $pluginHandle, $siteHandle = null): Response
     {

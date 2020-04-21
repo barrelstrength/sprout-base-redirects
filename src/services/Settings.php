@@ -27,7 +27,7 @@ class Settings extends Component
     public function getRedirectsSettings(): SproutBaseRedirectSettings
     {
         /** @var SproutBaseRedirectSettings $settings */
-        $settings = SproutBase::$app->settings->getBaseSettings(SproutBaseRedirectSettings::class);
+        $settings = SproutBase::$app->settings->getBaseSettings(SproutBaseRedirectSettings::class, 'sprout-redirects');
 
         return $settings;
     }

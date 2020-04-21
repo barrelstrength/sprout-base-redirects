@@ -10,7 +10,6 @@ namespace barrelstrength\sproutbaseredirects\migrations;
 use barrelstrength\sproutbase\migrations\Install as SproutBaseInstall;
 use barrelstrength\sproutbase\records\Settings as SproutBaseSettingsRecord;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use barrelstrength\sproutbaseredirects\models\Settings;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutRedirectsSettings;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use Craft;
@@ -82,7 +81,7 @@ class Install extends Migration
 
         if ($settingsRow === null) {
 
-            $settings = new Settings();
+            $settings = new SproutRedirectsSettings();
             $settings->structureId = $this->createStructureId();
 
             $settingsArray = [

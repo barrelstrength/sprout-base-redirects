@@ -22,6 +22,7 @@ use Craft;
 use craft\base\Element;
 use craft\elements\actions\Edit;
 use craft\elements\db\ElementQueryInterface;
+use craft\errors\MissingComponentException;
 use craft\errors\SiteNotFoundException;
 use craft\helpers\UrlHelper;
 use DateTime;
@@ -327,9 +328,9 @@ class Redirect extends Element
 
     /**
      * @return string|null
-     * @throws \craft\errors\MissingComponentException
-     * @throws \craft\errors\SiteNotFoundException
-     * @throws \yii\base\InvalidConfigException
+     * @throws MissingComponentException
+     * @throws SiteNotFoundException
+     * @throws InvalidConfigException
      */
     public function getCpEditUrl()
     {
@@ -351,8 +352,8 @@ class Redirect extends Element
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
-     * @throws \yii\base\Exception
-     * @throws \yii\base\Exception
+     * @throws Exception
+     * @throws Exception
      */
     public function getEditorHtml(): string
     {
@@ -537,8 +538,8 @@ class Redirect extends Element
      * @param string $attribute
      *
      * @return string
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function tableAttributeHtml(string $attribute): string
     {

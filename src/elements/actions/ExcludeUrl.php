@@ -10,9 +10,11 @@ namespace barrelstrength\sproutbaseredirects\elements\actions;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
+use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\base\ElementAction;
 use craft\elements\db\ElementQueryInterface;
+use Exception;
 use Throwable;
 
 /**
@@ -50,13 +52,12 @@ class ExcludeUrl extends ElementAction
      * @param ElementQueryInterface $query
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      * @throws Throwable
      */
     public function performAction(ElementQueryInterface $query): bool
     {
-        /** @var RedirectsSettingsModel $redirectSettings */
-        $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
+        $redirectSettings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
 
         /** @var Redirect[] $redirects */
         $redirects = $query->all();
@@ -73,7 +74,7 @@ class ExcludeUrl extends ElementAction
                 Craft::$app->elements->deleteElement($redirect, true);
             }
 
-            SproutBase::$app->settings->saveBaseSettings($redirectSettings->getAttributes(), RedirectsSettingsModel::class);
+            SproutBaseRedirects::$app->settings->saveRedirectsSettings($redirectSettings->getAttributes());
 
             $transaction->commit();
 

@@ -489,8 +489,7 @@ class Redirects extends Component
      */
     public function purge404s($excludedIds = [], $siteId = null, $force = false)
     {
-        /** @var RedirectsSettingsModel $redirectSettings */
-        $redirectSettings = SproutBase::$app->settings->getBaseSettings(RedirectsSettingsModel::class);
+        $redirectSettings = SproutBaseRedirects::$app->settings->getRedirectsSettings();
         $probability = (int)$redirectSettings->cleanupProbability;
 
         // See Craft Garbage collection treatment of probability
