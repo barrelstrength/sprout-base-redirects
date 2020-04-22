@@ -47,22 +47,17 @@ class Install extends Migration
 
     /**
      * @return bool
-     * @throws \yii\db\Exception
      */
     public function safeDown(): bool
     {
         // Delete Redirect Elements
-        Craft::$app->getDb()->createCommand()
-            ->delete(Table::ELEMENTS, ['type', Redirect::class])
-            ->execute();
-
-        // Delete Redirect Settings
-        Craft::$app->getDb()->createCommand()
-            ->delete(SproutBaseSettingsRecord::tableName(), ['model', SproutRedirectsSettings::class])
-            ->execute();
+        $this->delete(Table::ELEMENTS, ['type', Redirect::class]);
 
         // Delete Redirect Table
         $this->dropTableIfExists(RedirectRecord::tableName());
+
+        // Delete Redirect Settings
+        $this->removeSharedSettings();
 
         return true;
     }
@@ -90,6 +85,21 @@ class Install extends Migration
             ];
 
             $this->insert(SproutBaseSettingsRecord::tableName(), $settingsArray);
+        }
+    }
+
+    public function removeSharedSettings()
+    {
+        $settingsExist = (new Query())
+            ->select(['*'])
+            ->from([SproutBaseSettingsRecord::tableName()])
+            ->where(['model' => SproutRedirectsSettings::class])
+            ->exists();
+
+        if ($settingsExist) {
+            $this->delete(SproutBaseSettingsRecord::tableName(), [
+                'model' => SproutRedirectsSettings::class
+            ]);
         }
     }
 
