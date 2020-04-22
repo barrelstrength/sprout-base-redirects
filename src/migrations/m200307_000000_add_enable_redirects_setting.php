@@ -12,6 +12,7 @@ class m200307_000000_add_enable_redirects_setting extends Migration
      */
     public function safeUp(): bool
     {
+        /** @noinspection ClassConstantCanBeUsedInspection */
         $redirectSettings = (new Query())
             ->select([
                 'id',

@@ -7,9 +7,7 @@
 
 namespace barrelstrength\sproutbaseredirects\elements\actions;
 
-use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
-use barrelstrength\sproutbaseredirects\models\Settings as RedirectsSettingsModel;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\base\ElementAction;

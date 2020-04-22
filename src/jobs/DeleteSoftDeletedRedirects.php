@@ -9,7 +9,6 @@ namespace barrelstrength\sproutbaseredirects\jobs;
 
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
-use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Query;
 use craft\db\Table;

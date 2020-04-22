@@ -42,7 +42,7 @@
 
 {% block initJs %}
 
-    {{  parent() }}
+    {{ parent() }}
 
     new RedirectEditLinkSwitcher({
     pluginHandle: '{{ craft.app.request.getSegment(1) }}'
