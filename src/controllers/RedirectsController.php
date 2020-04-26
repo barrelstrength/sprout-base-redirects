@@ -7,6 +7,8 @@
 
 namespace barrelstrength\sproutbaseredirects\controllers;
 
+use barrelstrength\sproutbase\base\SharedPermissionsInterface;
+use barrelstrength\sproutbase\controllers\SharedController;
 use barrelstrength\sproutbase\SproutBase;
 use barrelstrength\sproutbaseredirects\elements\Redirect;
 use barrelstrength\sproutbaseredirects\models\Settings as SproutBaseRedirectsSettings;
@@ -18,35 +20,49 @@ use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Throwable;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
-/**
- * Redirects controller
- */
-class RedirectsController extends Controller
+class RedirectsController extends SharedController
 {
-    private $permissions = [];
-
+    /**
+     * @throws MissingComponentException
+     * @throws InvalidConfigException
+     */
     public function init()
     {
-        $this->permissions = SproutBase::$app->settings->getPluginPermissions(new SproutBaseRedirectsSettings(), 'sprout-redirects');
-
         parent::init();
+
+        Craft::$app->getSession()->set('sprout.redirects.pluginHandle', $this->pluginHandle);
     }
 
     /**
-     * @param string $pluginHandle
+     * @return string
+     */
+    public function getDefaultPluginHandle(): string
+    {
+        return 'sprout-redirects';
+    }
+
+    /**
+     * @return SharedPermissionsInterface|SproutBaseRedirectsSettings|null
+     */
+    public function getSharedSettingsModel()
+    {
+        return new SproutBaseRedirectsSettings();
+    }
+
+    /**
      * @param null   $siteHandle
      *
      * @return Response
-     * @throws MissingComponentException
      * @throws SiteNotFoundException
      * @throws ForbiddenHttpException
      */
-    public function actionRedirectsIndexTemplate(string $pluginHandle, $siteHandle = null): Response
+    public function actionRedirectsIndexTemplate($siteHandle = null): Response
     {
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
@@ -61,11 +77,9 @@ class RedirectsController extends Controller
             throw new ForbiddenHttpException('Something went wrong');
         }
 
-        Craft::$app->getSession()->set('sprout.redirects.pluginHandle', $pluginHandle);
-
         return $this->renderTemplate('sprout-base-redirects/redirects/index', [
             'currentSite' => $currentSite,
-            'pluginHandle' => $pluginHandle,
+            'pluginHandle' => $this->pluginHandle,
             'isPro' => SproutBaseRedirects::$app->redirects->canCreateRedirects()
         ]);
     }
@@ -73,7 +87,6 @@ class RedirectsController extends Controller
     /**
      * Edit a Redirect
      *
-     * @param string        $pluginHandle
      * @param null          $redirectId
      * @param null          $siteHandle
      * @param Redirect|null $redirect
@@ -83,7 +96,7 @@ class RedirectsController extends Controller
      * @throws NotFoundHttpException
      * @throws SiteNotFoundException
      */
-    public function actionEditRedirectTemplate(string $pluginHandle, $redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
+    public function actionEditRedirectTemplate($redirectId = null, $siteHandle = null, Redirect $redirect = null): Response
     {
         $this->requirePermission($this->permissions['sproutRedirects-editRedirects']);
 
@@ -124,8 +137,8 @@ class RedirectsController extends Controller
 
         $redirect->newUrl = $redirect->newUrl ?? '';
 
-        $continueEditingUrl = $pluginHandle.'/redirects/edit/{id}/'.$currentSite->handle;
-        $saveAsNewUrl = $pluginHandle.'/redirects/new/'.$currentSite->handle;
+        $continueEditingUrl = $this->pluginHandle.'/redirects/edit/{id}/'.$currentSite->handle;
+        $saveAsNewUrl = $this->pluginHandle.'/redirects/new/'.$currentSite->handle;
 
         $crumbs = [
             [
