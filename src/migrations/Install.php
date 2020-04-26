@@ -51,7 +51,7 @@ class Install extends Migration
     public function safeDown(): bool
     {
         // Delete Redirect Elements
-        $this->delete(Table::ELEMENTS, ['type', Redirect::class]);
+        $this->delete(Table::ELEMENTS, ['type' => Redirect::class]);
 
         // Delete Redirect Table
         $this->dropTableIfExists(RedirectRecord::tableName());
