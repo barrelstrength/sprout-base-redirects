@@ -1,5 +1,13 @@
 {% import "_includes/forms" as forms %}
 
+{% macro configWarning(setting) -%}
+    {{ "This is being overridden by the {setting} config setting."|t('sprout-forms-google-recaptcha', {
+        setting: setting
+    })|raw }}
+{%- endmacro %}
+
+{% from _self import configWarning %}
+
 <input type="hidden" name="sproutBaseSettingsType" value="{{ className(settings) }}">
 
 {{ forms.lightswitchField({
@@ -8,7 +16,8 @@
     name: 'enableRedirects',
     on: settings.enableRedirects ? true : false,
     onLabel: "Enable"|t('sprout-base-redirects'),
-    first: true
+    first: true,
+    warning: config.enableRedirects is defined ? configWarning('enableRedirects')
 }) }}
 
 {{ forms.lightswitchField({
@@ -17,7 +26,8 @@
     name: 'enable404RedirectLog',
     toggle: 'settings-total-404redirects',
     on: settings.enable404RedirectLog ? true : false,
-    onLabel: "Enable"|t('sprout-base-redirects')
+    onLabel: "Enable"|t('sprout-base-redirects'),
+    warning: config.enable404RedirectLog is defined ? configWarning('enable404RedirectLog')
 }) }}
 
 <div id="settings-total-404redirects"
@@ -31,7 +41,8 @@
             { value: 'urlWithQueryStrings', label: 'URL (with query strings)' },
             { value: 'urlWithoutQueryStrings', label: 'URL (without query strings)' },
         ],
-        value: settings.redirectMatchStrategy
+        value: settings.redirectMatchStrategy,
+        warning: config.redirectMatchStrategy is defined ? configWarning('redirectMatchStrategy')
     }) }}
 
     {{ forms.selectField({
@@ -42,7 +53,8 @@
             { value: 'removeQueryStrings', label: 'Remove query strings' },
             { value: 'appendQueryStrings', label: 'Append query strings' },
         ],
-        value: settings.queryStringStrategy
+        value: settings.queryStringStrategy,
+        warning: config.queryStringStrategy is defined ? configWarning('queryStringStrategy')
     }) }}
 
     {{ forms.lightswitchField({
@@ -50,7 +62,8 @@
         instructions: "Enable to capture the IP Address used when a 404 request is saved. IP Addresses may be considered personal information."|t('sprout-base-redirects'),
         name: 'trackRemoteIp',
         on: settings.trackRemoteIp ? true : false,
-        onLabel: "Enable"|t('sprout-base-redirects')
+        onLabel: "Enable"|t('sprout-base-redirects'),
+        warning: config.trackRemoteIp is defined ? configWarning('trackRemoteIp')
     }) }}
 
     {{ forms.textField({
@@ -59,7 +72,8 @@
         name: 'total404Redirects',
         size:'10',
         value: settings.total404Redirects,
-        errors: settings.getErrors('total404Redirects')
+        errors: settings.getErrors('total404Redirects'),
+        warning: config.total404Redirects is defined ? configWarning('total404Redirects')
     }) }}
 
     {{ forms.selectField({
@@ -76,7 +90,8 @@
             { value: '10', label: '1 in 100,000' },
             { value: '1', label: '1 in 1,000,000' }
         ],
-        value: settings.cleanupProbability
+        value: settings.cleanupProbability,
+        warning: config.cleanupProbability is defined ? configWarning('cleanupProbability')
     }) }}
 
     {{ forms.textareaField({
@@ -88,6 +103,7 @@
         placeholder: "# Exclude all CSS and JS files
 \\.(css|js)$"|t('sprout-base-redirects'),
         errors: settings.getErrors('excludedUrlPatterns'),
-        rows: 4
+        rows: 4,
+        warning: config.excludedUrlPatterns is defined ? configWarning('excludedUrlPatterns')
     }) }}
 </div>
