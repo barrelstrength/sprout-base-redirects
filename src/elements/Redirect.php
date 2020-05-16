@@ -437,6 +437,7 @@ class Redirect extends Element
         $record->save(false);
 
         $structureId = SproutBaseRedirects::$app->redirects->getStructureId();
+
         if ($isNew) {
             Craft::$app->structures->appendToRoot($structureId, $this);
         }
