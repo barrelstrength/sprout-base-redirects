@@ -215,6 +215,8 @@ class RedirectsController extends SharedController
 
         $redirect->enabled = Craft::$app->getRequest()->getBodyParam('enabled');
 
+        SproutBaseRedirects::$app->redirects->remove404RedirectIfExists($redirect);
+
         if (!Craft::$app->elements->saveElement($redirect)) {
             Craft::$app->getSession()->setError(Craft::t('sprout-base-redirects', 'Couldn’t save redirect.'));
 

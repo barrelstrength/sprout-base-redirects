@@ -17,6 +17,7 @@ use barrelstrength\sproutbaseredirects\records\Redirect as RedirectRecord;
 use barrelstrength\sproutbaseredirects\SproutBaseRedirects;
 use Craft;
 use craft\db\Query;
+use craft\db\Table;
 use craft\errors\DeprecationException;
 use craft\errors\ElementNotFoundException;
 use craft\errors\SiteNotFoundException;
@@ -414,6 +415,33 @@ class Redirects extends Component
         $this->purge404s([$redirect->id], $site->id);
 
         return $redirect;
+    }
+
+    /**
+     * @param Redirect $redirect
+     *
+     * @throws Throwable
+     */
+    public function remove404RedirectIfExists(Redirect $redirect)
+    {
+        $existing404RedirectId = (new Query())
+            ->select('redirects.id')
+            ->from(RedirectRecord::tableName().' redirects')
+            ->innerJoin(Table::ELEMENTS_SITES.' elements_sites', '[[elements_sites.elementId]] = [[redirects.id]]')
+            ->where([
+                'elements_sites.siteId' => $redirect->siteId,
+                'redirects.oldUrl' => $redirect->oldUrl
+            ])
+            ->scalar();
+
+        // Don't delete the 404 if we're currently updating it
+        if (!$existing404RedirectId || $existing404RedirectId === $redirect->id) {
+            return;
+        }
+        
+        if ($element = Craft::$app->getElements()->getElementById($existing404RedirectId)) {
+            Craft::$app->getElements()->deleteElement($element, true);
+        }
     }
 
     /**
