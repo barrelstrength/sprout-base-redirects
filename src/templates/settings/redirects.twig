@@ -71,6 +71,7 @@
         instructions: "The target number of 404 Redirects that will be stored in the database per-site, after the cleanup task runs. When the limit is reached, the least recently updated 404 Redirects will be deleted from the Redirects stored for that site."|t('sprout-base-redirects'),
         name: 'total404Redirects',
         size:'10',
+        placeholder: '250',
         value: settings.total404Redirects,
         errors: settings.getErrors('total404Redirects'),
         warning: config.total404Redirects is defined ? configWarning('total404Redirects')
