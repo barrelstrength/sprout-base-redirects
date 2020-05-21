@@ -102,9 +102,11 @@
 
 .sitemap-settings:last-of-type {
     margin-bottom: 30px;
+.sprout-redirects-index table thead th[data-attribute="oldUrl"] {
+    min-width: 180px;
 }
 
 /* Override hr on matrix blocks to display nicely */
 .pane hr {
     margin: 14px -14px;
-}
+}            
