@@ -435,7 +435,7 @@ class Redirects extends Component
             ->scalar();
 
         // Don't delete the 404 if we're currently updating it
-        if (!$existing404RedirectId || $existing404RedirectId === $redirect->id) {
+        if (!$existing404RedirectId || intval($existing404RedirectId) === $redirect->id) {
             return;
         }
         
