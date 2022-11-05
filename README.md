@@ -2,6 +2,11 @@
 
 A collection of common list classes and libraries for the Sprout Plugins Suite for Craft CMS.
 
+## Resources
+
+- [Report issues](https://github.com/barrelstrength/craft-sprout-redirects/issues) to the [Sprout Redirects](https://github.com/barrelstrength/craft-sprout-redirects) plugin repository.
+- Pull Requests should reference an open issue in the Sprout Redirects plugin repository
+
 ## Usage
 
 Include Sprout Base Redirects in your Sprout plugin composer.json file:
